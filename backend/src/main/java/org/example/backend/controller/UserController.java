@@ -1,6 +1,7 @@
 package org.example.backend.controller;
 
 import org.example.backend.model.User;
+import org.example.backend.model.UserConditions;
 import org.example.backend.model.UserInfo;
 import org.example.backend.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +21,12 @@ public class UserController {
         return userService.generateUser();
     }
 
-    // PUT: Aktualisiert die UserInfo
     @PutMapping("/{userId}/info")
-    public User updateUserInfo(@PathVariable String userId, @RequestBody UserInfo userInfo) {
-        return userService.updateUserInfo(userId, userInfo);
+    public User updateUserinfo(@PathVariable String userId, @RequestBody UserInfo userInfo) {
+        return userService.updateUserinfo(userId, userInfo);
+    }
+    @PutMapping("/{userId}/conditions")
+    public User updateUserConditions(@PathVariable String userId, @RequestBody UserConditions userConditions) {
+        return userService.updateUserConditions(userId, userConditions);
     }
 }
