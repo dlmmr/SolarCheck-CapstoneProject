@@ -52,7 +52,7 @@ export default function UserFormPage() {
                 setMessage("✅ Daten erfolgreich gespeichert!");
 
                 setTimeout(() => {
-                    navigate("/result", { state: { user: updatedUser } });
+                    navigate("/userConditions", { state: { user: updatedUser } });
                 }, 1200);
             })
             .catch((error) => {

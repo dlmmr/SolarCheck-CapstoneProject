@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public record UserConditions(
         boolean montagePlace,
         int montageAngle,
-        String montageDirection,
+        Direction montageDirection,  //  Enum-Typ statt String
         int montageSunhours
 ) {
 }
