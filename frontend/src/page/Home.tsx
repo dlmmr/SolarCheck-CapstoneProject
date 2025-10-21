@@ -8,13 +8,14 @@ export default function Home() {
 
     const handleCreateUser = () => {
         axios
-            .post("/api/home")
+            .post("/api/home") // volle URL ist besser
             .then((response) => {
-                console.log("User erstellt:", response.data);
+                const createdUser = response.data;
+                console.log("User erstellt:", createdUser);
                 setMessage("✅ Benutzer erfolgreich angelegt!");
 
-                // Nach kurzer Zeit (oder direkt) weiterleiten:
-                navigate("/userinfo");
+                // 👉 userId mitgeben:
+                navigate("/userinfo", { state: { userId: createdUser.userId } });
             })
             .catch((error) => {
                 console.error("Fehler beim Erstellen des Benutzers:", error);

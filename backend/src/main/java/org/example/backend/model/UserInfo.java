@@ -5,9 +5,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public record UserInfo(
-        String userRateOfELetricity,
+        int userRateOfElectricity,
         int userHouseholdNumber,
-        int userElectricityConsumption,
-        String userGeodata
+        int userElectricityConsumption
 ) {
 }

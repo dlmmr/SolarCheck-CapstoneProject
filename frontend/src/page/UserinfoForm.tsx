@@ -1,27 +1,28 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import FormUserinfo from "../assets/FormUserinfo";
 
-// 🔹 Typ für das Formular
+// Typ für die Formulardaten
 interface UserFormData {
-    userRateOfELetricity: string;
+    userRateOfElectricity: string;
     userHouseholdNumber: string;
     userElectricityConsumption: string;
-    userNotes?: string; // optional, falls du ein Textarea-Feld hinzufügen willst
 }
 
 export default function UserFormPage() {
-    // 🔹 State für Formulardaten & Nachricht
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { userId } = location.state || {};
+
     const [formData, setFormData] = useState<UserFormData>({
-        userRateOfELetricity: "",
+        userRateOfElectricity: "",
         userHouseholdNumber: "",
         userElectricityConsumption: "",
-        userNotes: "",
     });
 
     const [message, setMessage] = useState("");
 
-    // 🔹 Generischer Change-Handler für Input, Select & Textarea
     const handleChange = (
         e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
@@ -29,35 +30,56 @@ export default function UserFormPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    // 🔹 Submit-Handler mit Typisierung
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        try {
-            await axios.post("/api/userinfo", {
-                ...formData,
+        if (!userId) {
+            setMessage("❌ Keine Benutzer-ID vorhanden! Bitte starte erneut.");
+            return;
+        }
+
+        axios
+            .put(`/api/home/${userId}/info`, {
+                userRateOfElectricity: formData.userRateOfElectricity,
                 userHouseholdNumber: parseInt(formData.userHouseholdNumber),
                 userElectricityConsumption: parseInt(formData.userElectricityConsumption),
+            })
+            .then((response) => {
+                const updatedUser = response.data;
+                console.log("✅ User mit UserInfo & UserResult empfangen:");
+                console.log(updatedUser);
+
+                setMessage("✅ Daten erfolgreich gespeichert!");
+
+                setTimeout(() => {
+                    navigate("/result", { state: { user: updatedUser } });
+                }, 1200);
+            })
+            .catch((error) => {
+                console.error("Fehler beim Speichern:", error);
+                setMessage("❌ Fehler beim Speichern der Daten.");
             });
-            setMessage("✅ Daten erfolgreich gespeichert!");
-        } catch (error) {
-            console.error(error);
-            setMessage("❌ Fehler beim Speichern der Daten.");
-        }
     };
 
     return (
         <div className="max-w-md mx-auto p-6">
             <h2 className="text-2xl font-semibold mb-4">Deine Angaben</h2>
 
-            {/* Übergabe der Props an das Formular */}
             <FormUserinfo
                 formData={formData}
                 onChange={handleChange}
                 onSubmit={handleSubmit}
             />
 
-            {message && <p className="mt-4 text-center">{message}</p>}
+            {message && (
+                <p
+                    className={`mt-4 text-center ${
+                        message.startsWith("✅") ? "text-green-600" : "text-red-600"
+                    }`}
+                >
+                    {message}
+                </p>
+            )}
         </div>
     );
 }

@@ -4,8 +4,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public record UserResult(
-        int userPossibleELectricityGeneration,
+        int userPossibleElectricityGeneration,
         int userAmountofPossibleSavings,
         int userAmortisationTime
 ) {
 }
+
