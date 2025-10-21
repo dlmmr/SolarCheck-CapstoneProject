@@ -5,6 +5,7 @@ import org.example.backend.model.UserInfo;
 import org.example.backend.repo.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,7 +22,21 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public UserInfo generateUserinfo() {
-        return null;
+    // aktualisiert UserInfo eines bestehenden Users
+    public User updateUserInfo(String userId, UserInfo userInfo) {
+        Optional<User> existingUser = userRepository.findById(userId);
+        if (existingUser.isEmpty()) {
+            throw new IllegalArgumentException("User not found: " + userId);
+        }
+
+        User user = existingUser.get();
+        User updatedUser = new User(
+                user.userId(),
+                userInfo,                  // neue Info
+                user.userConditions(),     // bleibt gleich
+                user.userResult()          // bleibt gleich
+        );
+
+        return userRepository.save(updatedUser);
     }
 }
