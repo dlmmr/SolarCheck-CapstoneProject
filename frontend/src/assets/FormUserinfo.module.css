@@ -8,10 +8,11 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    color: #222; /* Texte deutlich sichtbar */
+    color: #222;
     font-family: system-ui, sans-serif;
 }
 
+/* Beschriftungen */
 .label {
     font-weight: 600;
     margin-bottom: 6px;
@@ -19,21 +20,39 @@
     color: #333;
 }
 
+/* Standard Input */
 .input {
     width: 90%;
     padding: 10px 12px;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 15px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
+/* Fokuszustand */
 .input:focus {
     border-color: #007bff;
     box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
     outline: none;
 }
 
+/* Fehlerzustand */
+.inputError {
+    border-color: #e74c3c !important;
+    background-color: #ffecec;
+    box-shadow: 0 0 4px rgba(231, 76, 60, 0.3);
+}
+
+/* Fehlermeldungstext */
+.error {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+/* Submit-Button */
 .button {
     background-color: #007bff;
     color: white;
@@ -46,7 +65,13 @@
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+/* Hover- und Disabled-Zustände */
 .button:hover {
     background-color: #0056b3;
     transform: translateY(-1px);
+}
+
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }

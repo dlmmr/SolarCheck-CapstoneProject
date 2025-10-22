@@ -2,23 +2,17 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import FormUserinfo from "../assets/FormUserinfo";
-
-// Typ für die Formulardaten
-interface UserFormData {
-    userRateOfElectricity: string;
-    userHouseholdNumber: string;
-    userElectricityConsumption: string;
-}
+import type { UserInfo } from "../model/Userinfo";
 
 export default function UserFormPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const { userId } = location.state || {};
 
-    const [formData, setFormData] = useState<UserFormData>({
-        userRateOfElectricity: "",
-        userHouseholdNumber: "",
-        userElectricityConsumption: "",
+    const [formData, setFormData] = useState<UserInfo>({
+        userRateOfElectricity: 0,
+        userHouseholdNumber: 0,
+        userElectricityConsumption: 0,
     });
 
     const [message, setMessage] = useState("");
@@ -27,7 +21,10 @@ export default function UserFormPage() {
         e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData((prev) => ({
+            ...prev,
+            [name]: Number(value),
+        }));
     };
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
@@ -39,16 +36,10 @@ export default function UserFormPage() {
         }
 
         axios
-            .put(`/api/home/${userId}/info`, {
-                userRateOfElectricity: formData.userRateOfElectricity,
-                userHouseholdNumber: parseInt(formData.userHouseholdNumber),
-                userElectricityConsumption: parseInt(formData.userElectricityConsumption),
-            })
+            .put(`/api/home/${userId}/info`, formData)
             .then((response) => {
                 const updatedUser = response.data;
-                console.log("✅ User mit UserInfo & UserResult empfangen:");
-                console.log(updatedUser);
-
+                console.log("✅ User mit UserInfo empfangen:", updatedUser);
                 setMessage("✅ Daten erfolgreich gespeichert!");
 
                 setTimeout(() => {
