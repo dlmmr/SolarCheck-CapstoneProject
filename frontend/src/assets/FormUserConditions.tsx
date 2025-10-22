@@ -1,16 +1,57 @@
-import type { ChangeEvent, FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { UserConditions } from "../model/UserConditions";
-import styles from "./FormUserConditions.module.css"; // 👈 CSS Module importieren
+import styles from "./FormUserConditions.module.css";
 
 interface FormUserConditionsProps {
     formData: UserConditions;
-    onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+    onChange: (
+        e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    ) => void;
     onSubmit: (e: FormEvent<HTMLFormElement>) => void;
 }
 
-export default function FormUserConditions({ formData, onChange, onSubmit }: FormUserConditionsProps) {
+export default function FormUserConditions({
+                                               formData,
+                                               onChange,
+                                               onSubmit,
+                                           }: FormUserConditionsProps) {
+    const [submitted, setSubmitted] = useState(false);
+
+    const isValid =
+        formData.montagePlace === true &&
+        Number(formData.montageAngle) > 0 &&
+        formData.montageDirection !== "" &&
+        Number(formData.montageSunhours) > 0;
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setSubmitted(true);
+
+        if (isValid) {
+            onSubmit(e);
+        }
+    };
+
+    const getInputClass = (value: string | number) => {
+        if (!submitted) return styles.input;
+        return value && Number(value) > 0
+            ? styles.input
+            : `${styles.input} ${styles.inputError}`;
+    };
+
+    const getSelectClass = (value: string) => {
+        if (!submitted) return styles.select;
+        return value ? styles.select : `${styles.select} ${styles.inputError}`;
+    };
+
+    const getCheckboxClass = (value: boolean) => {
+        if (!submitted) return styles.checkbox;
+        return value ? styles.checkbox : `${styles.checkbox} ${styles.inputError}`;
+    };
+
+
     return (
-        <form onSubmit={onSubmit} className={styles.container}>
+        <form onSubmit={handleSubmit} className={styles.container}>
             <div className={styles.formGroup}>
                 <label htmlFor="montagePlace" className={styles.label}>
                     Montage vorhanden
@@ -21,7 +62,7 @@ export default function FormUserConditions({ formData, onChange, onSubmit }: For
                     name="montagePlace"
                     checked={formData.montagePlace}
                     onChange={onChange}
-                    className={styles.checkbox}
+                    className={getCheckboxClass(formData.montagePlace)}
                 />
             </div>
 
@@ -35,7 +76,7 @@ export default function FormUserConditions({ formData, onChange, onSubmit }: For
                     name="montageAngle"
                     value={formData.montageAngle}
                     onChange={onChange}
-                    className={styles.input}
+                    className={getInputClass(formData.montageAngle)}
                 />
             </div>
 
@@ -48,7 +89,7 @@ export default function FormUserConditions({ formData, onChange, onSubmit }: For
                     name="montageDirection"
                     value={formData.montageDirection}
                     onChange={onChange}
-                    className={styles.select}
+                    className={getSelectClass(formData.montageDirection)}
                 >
                     <option value="">Bitte wählen</option>
                     <option value="NORTH">Norden</option>
@@ -72,9 +113,13 @@ export default function FormUserConditions({ formData, onChange, onSubmit }: For
                     name="montageSunhours"
                     value={formData.montageSunhours}
                     onChange={onChange}
-                    className={styles.input}
+                    className={getInputClass(formData.montageSunhours)}
                 />
             </div>
+
+            {submitted && !isValid && (
+                <p className={styles.error}>Bitte fülle alle Felder korrekt aus.</p>
+            )}
 
             <button type="submit" className={styles.button}>
                 Speichern und weiter

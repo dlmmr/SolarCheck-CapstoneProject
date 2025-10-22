@@ -11,10 +11,10 @@ export default function UserConditionsForm() {
     const { user } = location.state as { user: User } || {};
 
     const [formData, setFormData] = useState<UserConditions>({
-        montagePlace: user?.userConditions?.montagePlace || false,
-        montageAngle: user?.userConditions?.montageAngle || 0,
-        montageDirection: user?.userConditions?.montageDirection || "",
-        montageSunhours: user?.userConditions?.montageSunhours || 0,
+        montagePlace: user?.userConditions?.montagePlace ?? false,
+        montageAngle: user?.userConditions?.montageAngle ?? 0,
+        montageDirection: user?.userConditions?.montageDirection ?? "",
+        montageSunhours: user?.userConditions?.montageSunhours ?? 0,
     });
 
     const [message, setMessage] = useState("");
@@ -28,15 +28,10 @@ export default function UserConditionsForm() {
         let value: string | number | boolean;
 
         if (target instanceof HTMLInputElement) {
-            if (target.type === "checkbox") {
-                value = target.checked;
-            } else if (target.type === "number") {
-                value = Number(target.value);
-            } else {
-                value = target.value;
-            }
+            if (target.type === "checkbox") value = target.checked;
+            else if (target.type === "number") value = Number(target.value);
+            else value = target.value;
         } else {
-            // select oder textarea
             value = target.value;
         }
 
@@ -58,10 +53,9 @@ export default function UserConditionsForm() {
             .put<User>(`/api/home/${user.userId}/conditions`, formData)
             .then((response) => {
                 const updatedUser = response.data;
-                console.log("✅ User mit UserConditions & UserResult empfangen:", updatedUser);
+                console.log("✅ User mit UserConditions  empfangen:", updatedUser);
                 setMessage("✅ Daten erfolgreich gespeichert!");
 
-                // Beispiel: nach 1 Sekunde weiter zur Ergebnis-Seite
                 setTimeout(() => {
                     navigate("/result", { state: { user: updatedUser } });
                 }, 1200);

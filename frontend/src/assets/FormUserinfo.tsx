@@ -1,12 +1,9 @@
-import type { ChangeEvent, FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import type { UserInfo } from "../model/Userinfo";
 import styles from "./FormUserinfo.module.css";
 
 interface FormUserinfoProps {
-    formData: {
-        userRateOfElectricity: string;
-        userHouseholdNumber: string;
-        userElectricityConsumption: string;
-    };
+    formData: UserInfo;
     onChange: (
         e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => void;
@@ -14,19 +11,40 @@ interface FormUserinfoProps {
 }
 
 export default function FormUserinfo({ formData, onChange, onSubmit }: FormUserinfoProps) {
+    const [submitted, setSubmitted] = useState(false);
+
+    const isValid =
+        formData.userRateOfElectricity > 0 &&
+        formData.userHouseholdNumber > 0 &&
+        formData.userElectricityConsumption > 0;
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setSubmitted(true);
+
+        if (isValid) {
+            onSubmit(e);
+        }
+    };
+
+    const getInputClass = (value: number) => {
+        if (!submitted) return styles.input;
+        return value > 0 ? styles.input : `${styles.input} ${styles.inputError}`;
+    };
+
     return (
-        <form onSubmit={onSubmit} className={styles.container}>
+        <form onSubmit={handleSubmit} className={styles.container}>
             <div>
                 <label htmlFor="userRateOfElectricity" className={styles.label}>
                     Strompreis (ct/kWh)
                 </label>
                 <input
                     id="userRateOfElectricity"
-                    type="text"
+                    type="number"
                     name="userRateOfElectricity"
                     value={formData.userRateOfElectricity}
                     onChange={onChange}
-                    className={styles.input}
+                    className={getInputClass(formData.userRateOfElectricity)}
                 />
             </div>
 
@@ -40,7 +58,7 @@ export default function FormUserinfo({ formData, onChange, onSubmit }: FormUseri
                     name="userHouseholdNumber"
                     value={formData.userHouseholdNumber}
                     onChange={onChange}
-                    className={styles.input}
+                    className={getInputClass(formData.userHouseholdNumber)}
                 />
             </div>
 
@@ -54,9 +72,13 @@ export default function FormUserinfo({ formData, onChange, onSubmit }: FormUseri
                     name="userElectricityConsumption"
                     value={formData.userElectricityConsumption}
                     onChange={onChange}
-                    className={styles.input}
+                    className={getInputClass(formData.userElectricityConsumption)}
                 />
             </div>
+
+            {submitted && !isValid && (
+                <p className={styles.error}>Bitte fülle alle Felder korrekt aus.</p>
+            )}
 
             <button type="submit" className={styles.button}>
                 Speichern und weiter
