@@ -1,4 +1,5 @@
-import type {ChangeEvent, FormEvent} from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import styles from "./FormUserinfo.module.css";
 
 interface FormUserinfoProps {
     formData: {
@@ -14,45 +15,51 @@ interface FormUserinfoProps {
 
 export default function FormUserinfo({ formData, onChange, onSubmit }: FormUserinfoProps) {
     return (
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className={styles.container}>
             <div>
-                <label className="block mb-1">Strompreis (ct/kWh)</label>
+                <label htmlFor="userRateOfElectricity" className={styles.label}>
+                    Strompreis (ct/kWh)
+                </label>
                 <input
+                    id="userRateOfElectricity"
                     type="text"
                     name="userRateOfElectricity"
                     value={formData.userRateOfElectricity}
                     onChange={onChange}
-                    className="w-full border rounded p-2"
+                    className={styles.input}
                 />
             </div>
 
             <div>
-                <label className="block mb-1">Anzahl im Haushalt</label>
+                <label htmlFor="userHouseholdNumber" className={styles.label}>
+                    Anzahl im Haushalt
+                </label>
                 <input
+                    id="userHouseholdNumber"
                     type="number"
                     name="userHouseholdNumber"
                     value={formData.userHouseholdNumber}
                     onChange={onChange}
-                    className="w-full border rounded p-2"
+                    className={styles.input}
                 />
             </div>
 
             <div>
-                <label className="block mb-1">Stromverbrauch (kWh/Jahr)</label>
+                <label htmlFor="userElectricityConsumption" className={styles.label}>
+                    Stromverbrauch (kWh/Jahr)
+                </label>
                 <input
+                    id="userElectricityConsumption"
                     type="number"
                     name="userElectricityConsumption"
                     value={formData.userElectricityConsumption}
                     onChange={onChange}
-                    className="w-full border rounded p-2"
+                    className={styles.input}
                 />
             </div>
 
-            <button
-                type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-                Speichern
+            <button type="submit" className={styles.button}>
+                Speichern und weiter
             </button>
         </form>
     );

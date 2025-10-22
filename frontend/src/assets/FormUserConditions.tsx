@@ -1,5 +1,6 @@
 import type { ChangeEvent, FormEvent } from "react";
 import type { UserConditions } from "../model/UserConditions";
+import styles from "./FormUserConditions.module.css"; // 👈 CSS Module importieren
 
 interface FormUserConditionsProps {
     formData: UserConditions;
@@ -9,36 +10,45 @@ interface FormUserConditionsProps {
 
 export default function FormUserConditions({ formData, onChange, onSubmit }: FormUserConditionsProps) {
     return (
-        <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-                <label className="block mb-1">Montage vorhanden</label>
+        <form onSubmit={onSubmit} className={styles.container}>
+            <div className={styles.formGroup}>
+                <label htmlFor="montagePlace" className={styles.label}>
+                    Montage vorhanden
+                </label>
                 <input
+                    id="montagePlace"
                     type="checkbox"
                     name="montagePlace"
                     checked={formData.montagePlace}
                     onChange={onChange}
-                    className="mr-2"
+                    className={styles.checkbox}
                 />
             </div>
 
-            <div>
-                <label className="block mb-1">Montagewinkel (°)</label>
+            <div className={styles.formGroup}>
+                <label htmlFor="montageAngle" className={styles.label}>
+                    Montagewinkel (°)
+                </label>
                 <input
+                    id="montageAngle"
                     type="number"
                     name="montageAngle"
                     value={formData.montageAngle}
                     onChange={onChange}
-                    className="w-full border rounded p-2"
+                    className={styles.input}
                 />
             </div>
 
-            <div>
-                <label className="block mb-1">Ausrichtung</label>
+            <div className={styles.formGroup}>
+                <label htmlFor="montageDirection" className={styles.label}>
+                    Ausrichtung
+                </label>
                 <select
+                    id="montageDirection"
                     name="montageDirection"
                     value={formData.montageDirection}
                     onChange={onChange}
-                    className="w-full border rounded p-2"
+                    className={styles.select}
                 >
                     <option value="">Bitte wählen</option>
                     <option value="NORTH">Norden</option>
@@ -50,25 +60,24 @@ export default function FormUserConditions({ formData, onChange, onSubmit }: For
                     <option value="WEST">Westen</option>
                     <option value="NORTHWEST">Nordwesten</option>
                 </select>
-
             </div>
 
-            <div>
-                <label className="block mb-1">Sonnenstunden pro Tag</label>
+            <div className={styles.formGroup}>
+                <label htmlFor="montageSunhours" className={styles.label}>
+                    Sonnenstunden pro Tag
+                </label>
                 <input
+                    id="montageSunhours"
                     type="number"
                     name="montageSunhours"
                     value={formData.montageSunhours}
                     onChange={onChange}
-                    className="w-full border rounded p-2"
+                    className={styles.input}
                 />
             </div>
 
-            <button
-                type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-                Speichern
+            <button type="submit" className={styles.button}>
+                Speichern und weiter
             </button>
         </form>
     );
