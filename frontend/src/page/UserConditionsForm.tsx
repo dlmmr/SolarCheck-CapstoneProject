@@ -14,7 +14,7 @@ export default function UserConditionsForm() {
     const [formData, setFormData] = useState<UserConditionsDTO>({
         montagePlace: user?.userConditions?.montagePlace ?? false,
         montageAngle: user?.userConditions?.montageAngle ?? 0,
-        montageDirection: user?.userConditions?.montageDirection ?? "NORTH",
+        montageDirection: user?.userConditions?.montageDirection ?? "",
         montageShadeFactor: user?.userConditions?.montageShadeFactor ?? 0,
     });
     const [message, setMessage] = useState("");

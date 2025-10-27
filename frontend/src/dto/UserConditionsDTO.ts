@@ -1,4 +1,5 @@
 export type Direction =
+    | ""
     | "NORTH"
     | "NORTHEAST"
     | "EAST"
