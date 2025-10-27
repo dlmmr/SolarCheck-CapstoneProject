@@ -19,9 +19,10 @@ export default function FormUserConditions({
 
     const isValid =
         formData.montagePlace === true &&
-        Number(formData.montageAngle) > 0 &&
+        Number(formData.montageAngle) >= 0 &&
         formData.montageDirection !== "" &&
-        Number(formData.montageSunhours) > 0;
+        Number(formData.montageShadeFactor) >= 0 &&
+        Number(formData.montageShadeFactor) <= 1;
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -32,12 +33,18 @@ export default function FormUserConditions({
         }
     };
 
-    const getInputClass = (value: string | number) => {
+    const getInputClass = (value: string | number, allowZero = false) => {
         if (!submitted) return styles.input;
+        if (allowZero) {
+            return value !== "" && value !== null && value !== undefined
+                ? styles.input
+                : `${styles.input} ${styles.inputError}`;
+        }
         return value && Number(value) > 0
             ? styles.input
             : `${styles.input} ${styles.inputError}`;
     };
+
 
     const getSelectClass = (value: string) => {
         if (!submitted) return styles.select;
@@ -76,7 +83,7 @@ export default function FormUserConditions({
                     name="montageAngle"
                     value={formData.montageAngle}
                     onChange={onChange}
-                    className={getInputClass(formData.montageAngle)}
+                    className={getInputClass(formData.montageAngle, true)}
                 />
             </div>
 
@@ -104,16 +111,19 @@ export default function FormUserConditions({
             </div>
 
             <div className={styles.formGroup}>
-                <label htmlFor="montageSunhours" className={styles.label}>
-                    Sonnenstunden pro Tag
+                <label htmlFor="montageShadeFactor" className={styles.label}>
+                    Verschattung am Tag
                 </label>
                 <input
-                    id="montageSunhours"
+                    id="montageShadeFactor"
                     type="number"
-                    name="montageSunhours"
-                    value={formData.montageSunhours}
+                    name="montageShadeFactor"
+                    value={formData.montageShadeFactor}
                     onChange={onChange}
-                    className={getInputClass(formData.montageSunhours)}
+                    min={0}
+                    max={1}
+                    step={0.1}
+                    className={getInputClass(formData.montageShadeFactor, true)}
                 />
             </div>
 
