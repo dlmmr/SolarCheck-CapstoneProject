@@ -11,6 +11,16 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    // Constants
+    private static final double DEFAULT_POWER_KWP = 0.8;
+    private static final int SOLAR_IRRADIANCE = 1000;
+    private static final int INSTALLATION_COST_EUR = 1000;
+
+    // Defaults for optional fields
+    private static final int DEFAULT_ANGLE = 30;        // Optimal angle in degrees
+    private static final double DEFAULT_SHADE_FACTOR = 0.0;  // No shade
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -21,7 +31,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // aktualisiert UserInfo eines bestehenden Users
     public User updateUserinfo(String userId, UserInfo userInfo) {
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isEmpty()) {
@@ -31,9 +40,9 @@ public class UserService {
         User user = existingUser.get();
         User updatedUser = new User(
                 user.userId(),
-                userInfo,                  // neue Info
-                user.userConditions(),     // bleibt gleich
-                user.userResult()          // bleibt gleich
+                userInfo,
+                user.userConditions(),
+                user.userResult()
         );
 
         return userRepository.save(updatedUser);
@@ -44,52 +53,72 @@ public class UserService {
         if (existingUser.isEmpty()) {
             throw new IllegalArgumentException("User not found: " + userId);
         }
+
         User user = existingUser.get();
         User updatedUser = new User(
-        user.userId(),
-        user.userInfo(),
-        userConditions,
-        user.userResult()
+                user.userId(),
+                user.userInfo(),
+                userConditions,
+                user.userResult()
         );
+
         return userRepository.save(updatedUser);
     }
 
     // ERTRAGSRECHNER
-
-
-    private static final double DEFAULT_POWER_KWP = 0.8;
-    private static final int SOLAR_IRRADIANCE = 1000;
-
     public User calculateUserResult(String userId) {
-        // User aus DB laden
+        // Load user from DB
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User mit ID " + userId + " nicht gefunden"));
 
-        // UserConditions prüfen
+        // Validate required data exists
         UserConditions conditions = Optional.ofNullable(user.userConditions())
                 .orElseThrow(() -> new IllegalStateException(
                         "UserConditions fehlen für User mit ID " + userId + ". Bitte zuerst Bedingungen setzen."));
 
-        // Faktoren berechnen
-        double directionFactor = getDirectionFactor(conditions.montageDirection());
-        double angleFactor = getAngleFactor(conditions.montageAngle());
+        UserInfo info = Optional.ofNullable(user.userInfo())
+                .orElseThrow(() -> new IllegalStateException(
+                        "UserInfo fehlen für User mit ID " + userId + ". Bitte zuerst UserInfo setzen."));
 
-        // Jahresertrag berechnen
+        // Calculate direction factor
+        double directionFactor = getDirectionFactor(conditions.montageDirection());
+
+        // ✅ Handle nullable montageAngle - use default if null
+        int angle = conditions.montageAngle() != null
+                ? conditions.montageAngle()
+                : DEFAULT_ANGLE;
+        double angleFactor = getAngleFactor(angle);
+
+        // ✅ Handle nullable montageShadeFactor - use default if null
+        double shadeFactor = conditions.montageShadeFactor() != null
+                ? conditions.montageShadeFactor()
+                : DEFAULT_SHADE_FACTOR;
+
+        // Calculate annual electricity generation in kWh
         double yearlyYield = DEFAULT_POWER_KWP
                 * directionFactor
                 * angleFactor
-                * (1 - conditions.montageShadeFactor())
+                * (1 - shadeFactor)  // 0.0 = no shade, 1.0 = complete shade
                 * SOLAR_IRRADIANCE;
 
-        // Ergebnisse runden
         int possibleElectricity = (int) Math.round(yearlyYield);
-        int savings = (int) Math.round(possibleElectricity * 0.3); // Beispiel: 30 Cent/kWh
-        int amortisationTime = savings > 0 ? (int) Math.ceil(1000.0 / savings) : 9999; // Beispiel 1000€ Kosten
 
-        // UserResult erstellen
+        // ✅ FIXED: Use actual electricity rate from UserInfo
+        // Convert from cents to euros (e.g., 30 cents = 0.30 EUR)
+        double pricePerKwh = info.userRateOfElectricity() / 100.0;
+
+        // Calculate annual savings in euros
+        int savings = (int) Math.round(possibleElectricity * pricePerKwh);
+
+        // Calculate amortization time in years
+        int amortisationTime = savings > 0
+                ? (int) Math.ceil((double) INSTALLATION_COST_EUR / savings)
+                : Integer.MAX_VALUE;  // Never pays back if no savings
+
+        // Create result
         UserResult result = new UserResult(possibleElectricity, savings, amortisationTime);
 
-        // neuen User mit Result erstellen
+        // Save updated user with result
         User updatedUser = new User(
                 user.userId(),
                 user.userInfo(),
@@ -97,11 +126,10 @@ public class UserService {
                 result
         );
 
-        // User speichern und zurückgeben
         return userRepository.save(updatedUser);
     }
 
-    // Hilfsmethoden
+    // Helper methods
     private double getDirectionFactor(Direction direction) {
         return switch (direction) {
             case SOUTH -> 1.0;
@@ -113,13 +141,13 @@ public class UserService {
     }
 
     private double getAngleFactor(int angle) {
+        // Clamp angle to valid range
         if (angle < 0) angle = 0;
         if (angle > 90) angle = 90;
 
-        double diff = Math.abs(angle - 30); // Optimal 30°
-        double factor = 1.0 - diff * 0.01;  // pro Grad Abweichung 1% Verlust
-        return Math.max(factor, 0.6);       // Minimum 60%
+        // Optimal angle is 30°
+        double diff = Math.abs(angle - 30);
+        double factor = 1.0 - diff * 0.01;  // 1% loss per degree deviation
+        return Math.max(factor, 0.6);       // Minimum 60% efficiency
     }
-
-    //    ERTRAGSRECHNER
 }
