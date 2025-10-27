@@ -90,13 +90,14 @@ class UserServiceTest {
     @Test
     void updateUserConditions_shouldThrowIfUserNotFound() {
         // Given
+        UserConditions conditions = new UserConditions(true, 30, Direction.SOUTH, 0.3);
         when(userRepository.findById("999")).thenReturn(Optional.empty());
 
-        // When / Then
+        // When // Then
         assertThrows(IllegalArgumentException.class,
-                () -> userService.updateUserConditions("999",
-                        new UserConditions(true, 30, Direction.SOUTH, 0.3)));
+                () -> userService.updateUserConditions("999", conditions));
     }
+
 
     // ✅ calculateUserResult
     @Test

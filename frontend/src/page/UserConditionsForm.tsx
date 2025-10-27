@@ -2,45 +2,50 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import FormUserConditions from "../assets/FormUserConditions";
-import type { User } from "../model/User";
-import type { UserConditions } from "../model/UserConditions";
+import type { UserResponseDTO } from "../dto/UserResponseDTO";
+import type { UserConditionsDTO } from "../dto/UserConditionsDTO";
+
 
 export default function UserConditionsForm() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { user } = location.state as { user: User } || {};
+    const { user } = location.state as { user: UserResponseDTO } || {};
 
-    const [formData, setFormData] = useState<UserConditions>({
+    const [formData, setFormData] = useState<UserConditionsDTO>({
         montagePlace: user?.userConditions?.montagePlace ?? false,
         montageAngle: user?.userConditions?.montageAngle ?? 0,
-        montageDirection: user?.userConditions?.montageDirection ?? "",
+        montageDirection: user?.userConditions?.montageDirection ?? "NORTH",
         montageShadeFactor: user?.userConditions?.montageShadeFactor ?? 0,
     });
-
     const [message, setMessage] = useState("");
 
     const handleChange = (
         e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         const target = e.target;
-        const name = target.name;
 
         let value: string | number | boolean;
 
         if (target instanceof HTMLInputElement) {
-            if (target.type === "checkbox") value = target.checked;
-            else if (target.type === "number") value = Number(target.value);
-            else value = target.value;
+            if (target.type === "checkbox") {
+                value = target.checked; // ✅ nur hier
+            } else if (target.type === "number") {
+                value = Number(target.value);
+            } else {
+                value = target.value;
+            }
         } else {
+            // HTMLSelectElement oder HTMLTextAreaElement
             value = target.value;
         }
 
         setFormData((prev) => ({
             ...prev,
-            [name]: value,
+            [target.name]: value,
         }));
     };
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (!user?.userId) {
@@ -48,30 +53,26 @@ export default function UserConditionsForm() {
             return;
         }
 
-        // 1️⃣ UserConditions speichern
-        axios
-            .put<User>(`/api/home/${user.userId}/conditions`, formData)
-            .then((response) => {
-                const updatedUser = response.data;
-                console.log("✅ UserConditions gespeichert:", updatedUser);
+        try {
+            // 1️⃣ UserConditions speichern
+            await axios.put<UserResponseDTO>(`/api/home/${user.userId}/conditions`, formData);
+            console.log("✅ UserConditions gespeichert");
 
-                // 2️⃣ Direkt die Berechnung auslösen
-                return axios.post<User>(`/api/home/${user.userId}/result`);
-            })
-            .then((resultResponse) => {
-                const resultUser = resultResponse.data;
-                console.log("✅ Berechnung durchgeführt:", resultUser);
-                setMessage("✅ Berechnung erfolgreich!");
+            // 2️⃣ Direkt die Berechnung auslösen
+            const resultResponse = await axios.post<UserResponseDTO>(`/api/home/${user.userId}/result`);
+            const resultUser = resultResponse.data;
 
-                // 3️⃣ Weiterleiten auf Result-Page mit den berechneten Daten
-                setTimeout(() => {
-                    navigate("/result", { state: { user: resultUser } });
-                }, 500);
-            })
-            .catch((error) => {
-                console.error("Fehler:", error);
-                setMessage("❌ Fehler beim Speichern oder Berechnen.");
-            });
+            console.log("✅ Berechnung durchgeführt:", resultUser);
+            setMessage("✅ Berechnung erfolgreich!");
+
+            // 3️⃣ Weiterleiten auf Result-Page
+            setTimeout(() => {
+                navigate("/result", { state: { user: resultUser } });
+            }, 500);
+        } catch (error) {
+            console.error("Fehler:", error);
+            setMessage("❌ Fehler beim Speichern oder Berechnen.");
+        }
     };
 
     return (
@@ -85,11 +86,7 @@ export default function UserConditionsForm() {
             />
 
             {message && (
-                <p
-                    className={`mt-4 text-center ${
-                        message.startsWith("✅") ? "text-green-600" : "text-red-600"
-                    }`}
-                >
+                <p className={`mt-4 text-center ${message.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>
                     {message}
                 </p>
             )}

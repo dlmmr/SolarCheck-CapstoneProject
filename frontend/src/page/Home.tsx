@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import HomeAsset from "../assets/HomeAsset";
+import type { UserResponseDTO } from "../dto/UserResponseDTO";
 
 export default function Home() {
     const [message, setMessage] = useState("");
@@ -9,7 +10,7 @@ export default function Home() {
 
     const handleCreateUser = () => {
         axios
-            .post("/api/home") // volle URL ist besser
+            .post<UserResponseDTO>("/api/home")
             .then((response) => {
                 const createdUser = response.data;
                 console.log("User erstellt:", createdUser);

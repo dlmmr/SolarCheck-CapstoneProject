@@ -1,6 +1,5 @@
 package org.example.backend.service;
 
-import jakarta.validation.Valid;
 import org.example.backend.model.*;
 import org.example.backend.repo.UserRepository;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,7 @@ public class UserService {
         return userRepository.save(updatedUser);
     }
 
-    public User updateUserConditions(String userId, @Valid UserConditions userConditions) {
+    public User updateUserConditions(String userId, UserConditions userConditions) {
         Optional<User> existingUser = userRepository.findById(userId);
         if (existingUser.isEmpty()) {
             throw new IllegalArgumentException("User not found: " + userId);
