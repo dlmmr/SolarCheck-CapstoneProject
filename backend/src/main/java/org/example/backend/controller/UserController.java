@@ -1,5 +1,6 @@
 package org.example.backend.controller;
 
+import jakarta.validation.Valid;
 import org.example.backend.model.User;
 import org.example.backend.model.UserConditions;
 import org.example.backend.model.UserInfo;
@@ -25,10 +26,15 @@ public class UserController {
     public User updateUserinfo(@PathVariable String userId, @RequestBody UserInfo userInfo) {
         return userService.updateUserinfo(userId, userInfo);
     }
+
     @PutMapping("/{userId}/conditions")
-    public User updateUserConditions(@PathVariable String userId, @RequestBody UserConditions userConditions) {
+    public User updateUserConditions(
+            @PathVariable String userId,
+            @Valid @RequestBody UserConditions userConditions
+    ) {
         return userService.updateUserConditions(userId, userConditions);
     }
+
     @PostMapping("/{userId}/result")
     public User calculateUserResult(@PathVariable String userId) {
         return userService.calculateUserResult(userId);
