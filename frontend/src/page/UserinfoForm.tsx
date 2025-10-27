@@ -2,14 +2,15 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import FormUserinfo from "../assets/FormUserinfo";
-import type { UserInfo } from "../model/Userinfo";
+import type { UserInfoDTO } from "../dto/UserInfoDTO";
+import type { UserResponseDTO } from "../dto/UserResponseDTO";
 
 export default function UserFormPage() {
     const location = useLocation();
     const navigate = useNavigate();
     const { userId } = location.state || {};
 
-    const [formData, setFormData] = useState<UserInfo>({
+    const [formData, setFormData] = useState<UserInfoDTO>({
         userRateOfElectricity: 0,
         userHouseholdNumber: 0,
         userElectricityConsumption: 0,
@@ -36,7 +37,7 @@ export default function UserFormPage() {
         }
 
         axios
-            .put(`/api/home/${userId}/info`, formData)
+            .put<UserResponseDTO>(`/api/home/${userId}/info`, formData)
             .then((response) => {
                 const updatedUser = response.data;
                 console.log("✅ User mit UserInfo empfangen:", updatedUser);
@@ -55,19 +56,13 @@ export default function UserFormPage() {
     return (
         <div className="max-w-md mx-auto p-6">
             <h2 className="text-2xl font-semibold mb-4">Deine Angaben</h2>
-
             <FormUserinfo
                 formData={formData}
                 onChange={handleChange}
                 onSubmit={handleSubmit}
             />
-
             {message && (
-                <p
-                    className={`mt-4 text-center ${
-                        message.startsWith("✅") ? "text-green-600" : "text-red-600"
-                    }`}
-                >
+                <p className={`mt-4 text-center ${message.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>
                     {message}
                 </p>
             )}
