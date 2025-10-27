@@ -29,4 +29,8 @@ public class UserController {
     public User updateUserConditions(@PathVariable String userId, @RequestBody UserConditions userConditions) {
         return userService.updateUserConditions(userId, userConditions);
     }
+    @PostMapping("/{userId}/result")
+    public User calculateUserResult(@PathVariable String userId) {
+        return userService.calculateUserResult(userId);
+    }
 }

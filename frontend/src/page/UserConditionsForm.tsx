@@ -14,7 +14,7 @@ export default function UserConditionsForm() {
         montagePlace: user?.userConditions?.montagePlace ?? false,
         montageAngle: user?.userConditions?.montageAngle ?? 0,
         montageDirection: user?.userConditions?.montageDirection ?? "",
-        montageSunhours: user?.userConditions?.montageSunhours ?? 0,
+        montageShadeFactor: user?.userConditions?.montageShadeFactor ?? 0,
     });
 
     const [message, setMessage] = useState("");
@@ -40,7 +40,6 @@ export default function UserConditionsForm() {
             [name]: value,
         }));
     };
-
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -49,20 +48,29 @@ export default function UserConditionsForm() {
             return;
         }
 
+        // 1️⃣ UserConditions speichern
         axios
             .put<User>(`/api/home/${user.userId}/conditions`, formData)
             .then((response) => {
                 const updatedUser = response.data;
-                console.log("✅ User mit UserConditions  empfangen:", updatedUser);
-                setMessage("✅ Daten erfolgreich gespeichert!");
+                console.log("✅ UserConditions gespeichert:", updatedUser);
 
+                // 2️⃣ Direkt die Berechnung auslösen
+                return axios.post<User>(`/api/home/${user.userId}/result`);
+            })
+            .then((resultResponse) => {
+                const resultUser = resultResponse.data;
+                console.log("✅ Berechnung durchgeführt:", resultUser);
+                setMessage("✅ Berechnung erfolgreich!");
+
+                // 3️⃣ Weiterleiten auf Result-Page mit den berechneten Daten
                 setTimeout(() => {
-                    navigate("/result", { state: { user: updatedUser } });
-                }, 1200);
+                    navigate("/result", { state: { user: resultUser } });
+                }, 500);
             })
             .catch((error) => {
-                console.error("Fehler beim Speichern:", error);
-                setMessage("❌ Fehler beim Speichern der Daten.");
+                console.error("Fehler:", error);
+                setMessage("❌ Fehler beim Speichern oder Berechnen.");
             });
     };
 

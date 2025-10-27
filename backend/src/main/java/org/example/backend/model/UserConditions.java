@@ -7,6 +7,6 @@ public record UserConditions(
         boolean montagePlace,
         int montageAngle,
         Direction montageDirection,  //  Enum-Typ statt String
-        int montageSunhours
+        double montageShadeFactor
 ) {
 }
