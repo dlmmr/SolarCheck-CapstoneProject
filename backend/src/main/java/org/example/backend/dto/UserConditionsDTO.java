@@ -1,12 +1,20 @@
 package org.example.backend.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.*;
 import org.example.backend.model.Direction;
 
 public record UserConditionsDTO(
-        boolean montagePlace,
-        @Min(0) @Max(90) int montageAngle,
+        @NotNull
+        Boolean montagePlace,             // wrapper: need @NotNull to work
+
+        // NO @NotNull = optional field
+        @Min(0) @Max(90)
+        Integer montageAngle,             // wrapper: can be null
+
+        @NotNull
         Direction montageDirection,
-        @Min(0) @Max(1) double montageShadeFactor
+
+        // NO @NotNull = optional field
+        @DecimalMin("0.0") @DecimalMax("1.0")
+        Double montageShadeFactor         // wrapper: can be null
 ) {}

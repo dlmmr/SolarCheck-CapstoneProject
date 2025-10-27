@@ -26,7 +26,10 @@ class UserServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // ✅ generateUser
+    // ===================================
+    // generateUser Tests
+    // ===================================
+
     @Test
     void generateUser_shouldSaveUserWithRandomId() {
         // Given
@@ -38,10 +41,16 @@ class UserServiceTest {
 
         // Then
         assertNotNull(result.userId());
+        assertNull(result.userInfo());
+        assertNull(result.userConditions());
+        assertNull(result.userResult());
         verify(userRepository).save(any(User.class));
     }
 
-    // ✅ updateUserinfo
+    // ===================================
+    // updateUserinfo Tests
+    // ===================================
+
     @Test
     void updateUserinfo_shouldReplaceUserInfo() {
         // Given
@@ -57,6 +66,7 @@ class UserServiceTest {
         // Then
         assertEquals(newInfo, updated.userInfo());
         assertEquals(existing.userConditions(), updated.userConditions());
+        verify(userRepository).save(updated);
     }
 
     @Test
@@ -69,7 +79,10 @@ class UserServiceTest {
         assertThrows(IllegalArgumentException.class, () -> userService.updateUserinfo("999", newInfo));
     }
 
-    // ✅ updateUserConditions
+    // ===================================
+    // updateUserConditions Tests
+    // ===================================
+
     @Test
     void updateUserConditions_shouldSetConditions() {
         // Given
@@ -93,18 +106,21 @@ class UserServiceTest {
         UserConditions conditions = new UserConditions(true, 30, Direction.SOUTH, 0.3);
         when(userRepository.findById("999")).thenReturn(Optional.empty());
 
-        // When // Then
+        // When / Then
         assertThrows(IllegalArgumentException.class,
                 () -> userService.updateUserConditions("999", conditions));
     }
 
+    // ===================================
+    // calculateUserResult Tests
+    // ===================================
 
-    // ✅ calculateUserResult
     @Test
     void calculateUserResult_shouldCalculateBasedOnConditions() {
-        // Given
+        // Given - FIXED: Added UserInfo
+        UserInfo info = new UserInfo(30, 2, 4000);  // 30 cents/kWh
         UserConditions conditions = new UserConditions(true, 30, Direction.SOUTH, 0.0);
-        User user = new User("1", null, conditions, null);
+        User user = new User("1", info, conditions, null);
 
         when(userRepository.findById("1")).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -115,14 +131,16 @@ class UserServiceTest {
         // Then
         assertNotNull(updated.userResult());
         assertTrue(updated.userResult().userPossibleElectricityGeneration() > 0);
+        assertTrue(updated.userResult().userAmountofPossibleSavings() > 0);
+        assertTrue(updated.userResult().userAmortisationTime() > 0);
     }
 
-    // ✅ Extremfall #1 – max Schatten → 0 Ertrag
     @Test
     void calculateUserResult_shouldReturnZeroYieldWhenFullShade() {
-        // Given
+        // Given - FIXED: Added UserInfo
+        UserInfo info = new UserInfo(30, 2, 4000);
         UserConditions conditions = new UserConditions(true, 30, Direction.NORTH, 1.0);
-        User user = new User("1", null, conditions, null);
+        User user = new User("1", info, conditions, null);
 
         when(userRepository.findById("1")).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -133,15 +151,16 @@ class UserServiceTest {
         // Then
         assertEquals(0, updated.userResult().userPossibleElectricityGeneration());
         assertEquals(0, updated.userResult().userAmountofPossibleSavings());
-        assertEquals(9999, updated.userResult().userAmortisationTime());
+        // FIXED: Changed from 9999 to Integer.MAX_VALUE
+        assertEquals(Integer.MAX_VALUE, updated.userResult().userAmortisationTime());
     }
 
-    // ✅ Extremfall #2 – falscher Angle → Korrektur greift
     @Test
     void calculateUserResult_shouldCorrectOutOfBoundsAngle() {
-        // Given
+        // Given - FIXED: Added UserInfo
+        UserInfo info = new UserInfo(30, 2, 4000);
         UserConditions conditions = new UserConditions(true, -10, Direction.SOUTH, 0.0);
-        User user = new User("1", null, conditions, null);
+        User user = new User("1", info, conditions, null);
 
         when(userRepository.findById("1")).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -149,14 +168,89 @@ class UserServiceTest {
         // When
         User updated = userService.calculateUserResult("1");
 
-        // Then
+        // Then - angle -10 gets clamped to 0, still produces some yield
         assertTrue(updated.userResult().userPossibleElectricityGeneration() > 0);
     }
 
+    // ===================================
+    // NEW: Tests for Nullable Fields
+    // ===================================
+
+    @Test
+    void calculateUserResult_shouldUseDefaultAngleWhenNull() {
+        // Given - montageAngle is null
+        UserInfo info = new UserInfo(30, 2, 4000);
+        UserConditions conditions = new UserConditions(true, null, Direction.SOUTH, 0.0);
+        User user = new User("1", info, conditions, null);
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        User updated = userService.calculateUserResult("1");
+
+        // Then - should use default angle (30°) and produce optimal yield
+        assertTrue(updated.userResult().userPossibleElectricityGeneration() > 0);
+        assertEquals(800, updated.userResult().userPossibleElectricityGeneration()); // 0.8 * 1.0 * 1.0 * 1.0 * 1000 = 800
+    }
+
+    @Test
+    void calculateUserResult_shouldUseDefaultShadeFactorWhenNull() {
+        // Given - montageShadeFactor is null
+        UserInfo info = new UserInfo(30, 2, 4000);
+        UserConditions conditions = new UserConditions(true, 30, Direction.SOUTH, null);
+        User user = new User("1", info, conditions, null);
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        User updated = userService.calculateUserResult("1");
+
+        // Then - should use default shade factor (0.0) meaning no shade
+        assertTrue(updated.userResult().userPossibleElectricityGeneration() > 0);
+        assertEquals(800, updated.userResult().userPossibleElectricityGeneration());
+    }
+
+    @Test
+    void calculateUserResult_shouldHandleBothNullableFields() {
+        // Given - both nullable fields are null
+        UserInfo info = new UserInfo(30, 2, 4000);
+        UserConditions conditions = new UserConditions(true, null, Direction.SOUTH, null);
+        User user = new User("1", info, conditions, null);
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        User updated = userService.calculateUserResult("1");
+
+        // Then - should use both defaults (angle=30°, shade=0.0)
+        assertNotNull(updated.userResult());
+        assertEquals(800, updated.userResult().userPossibleElectricityGeneration());
+        assertEquals(240, updated.userResult().userAmountofPossibleSavings()); // 800 * 0.30 = 240
+    }
+
+    // ===================================
+    // Error Cases
+    // ===================================
+
     @Test
     void calculateUserResult_shouldThrowWhenNoConditionsSet() {
-        // Given
-        User user = new User("1", null, null, null);
+        // Given - UserInfo exists but UserConditions is null
+        UserInfo info = new UserInfo(30, 2, 4000);
+        User user = new User("1", info, null, null);
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+
+        // When / Then
+        assertThrows(IllegalStateException.class, () -> userService.calculateUserResult("1"));
+    }
+
+    @Test
+    void calculateUserResult_shouldThrowWhenNoUserInfoSet() {
+        // Given - UserConditions exists but UserInfo is null
+        UserConditions conditions = new UserConditions(true, 30, Direction.SOUTH, 0.0);
+        User user = new User("1", null, conditions, null);
         when(userRepository.findById("1")).thenReturn(Optional.of(user));
 
         // When / Then
@@ -170,5 +264,46 @@ class UserServiceTest {
 
         // When / Then
         assertThrows(IllegalArgumentException.class, () -> userService.calculateUserResult("999"));
+    }
+
+    // ===================================
+    // Business Logic Tests
+    // ===================================
+
+    @Test
+    void calculateUserResult_shouldCalculateSavingsCorrectly() {
+        // Given - 40 cents/kWh electricity rate
+        UserInfo info = new UserInfo(40, 2, 4000);
+        UserConditions conditions = new UserConditions(true, 30, Direction.SOUTH, 0.0);
+        User user = new User("1", info, conditions, null);
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        User updated = userService.calculateUserResult("1");
+
+        // Then - 800 kWh * 0.40 EUR/kWh = 320 EUR savings
+        assertEquals(800, updated.userResult().userPossibleElectricityGeneration());
+        assertEquals(320, updated.userResult().userAmountofPossibleSavings());
+        // 1000 EUR cost / 320 EUR savings = 3.125 → rounds up to 4 years
+        assertEquals(4, updated.userResult().userAmortisationTime());
+    }
+
+    @Test
+    void calculateUserResult_shouldHandleDifferentDirections() {
+        // Given - EAST direction (factor 0.8)
+        UserInfo info = new UserInfo(30, 2, 4000);
+        UserConditions conditions = new UserConditions(true, 30, Direction.EAST, 0.0);
+        User user = new User("1", info, conditions, null);
+
+        when(userRepository.findById("1")).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        User updated = userService.calculateUserResult("1");
+
+        // Then - 0.8 * 0.8 * 1.0 * 1.0 * 1000 = 640 kWh
+        assertEquals(640, updated.userResult().userPossibleElectricityGeneration());
     }
 }

@@ -1,14 +1,11 @@
 package org.example.backend.model;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
+
+// Mix: required → primitives, optional → wrappers
 public record UserConditions(
-        boolean montagePlace,
-        @Min(0) @Max(90) int montageAngle,
-        Direction montageDirection,  //  Enum-Typ statt String
-        @Min(0) @Max(1) double montageShadeFactor
-) {
-}
+        boolean montagePlace,             // primitive: always has a value
+        Integer montageAngle,             // WRAPPER: CAN BE NULL ✅
+        Direction montageDirection,       // enum: always has a value
+        Double montageShadeFactor         // WRAPPER: CAN BE NULL ✅
+) {}

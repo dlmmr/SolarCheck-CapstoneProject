@@ -1,12 +1,9 @@
 package org.example.backend.model;
 
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document
+// Required fields → primitives (more efficient, can't be null)
 public record UserInfo(
-        int userRateOfElectricity,
-        int userHouseholdNumber,
-        int userElectricityConsumption
-) {
-}
+        int userRateOfElectricity,        // primitive: always has a value
+        int userHouseholdNumber,          // primitive: always has a value
+        int userElectricityConsumption    // primitive: always has a value
+) {}
