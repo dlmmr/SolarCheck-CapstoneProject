@@ -50,7 +50,7 @@ export default function FormUserinfo({ formData, onChange, onSubmit }: FormUseri
 
             <div>
                 <label htmlFor="userHouseholdNumber" className={styles.label}>
-                    Anzahl im Haushalt
+                    Anzahl der Personen im Haushalt
                 </label>
                 <input
                     id="userHouseholdNumber"
