@@ -13,11 +13,17 @@ interface FormUserConditionsProps {
     readonly onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
     readonly onSubmit: (e: FormEvent<HTMLFormElement>) => void;
     readonly onBack: () => void;
+    readonly isLoading?: boolean;
 }
 
-export default function UserConditionsAsset({ formData, onChange, onSubmit, onBack }: FormUserConditionsProps) {
+export default function UserConditionsAsset({
+                                                formData,
+                                                onChange,
+                                                onSubmit,
+                                                onBack,
+                                                isLoading = false,
+                                            }: FormUserConditionsProps) {
     const [submitted, setSubmitted] = useState(false);
-
     const { montagePlace = false, montageAngle = "", montageDirection = "", montageShadeFactor = "" } = formData;
 
     const angleValid = montageAngle !== "" && montageAngle >= 0 && montageAngle <= 90;
@@ -31,9 +37,9 @@ export default function UserConditionsAsset({ formData, onChange, onSubmit, onBa
         if (isValid) onSubmit(e);
     };
 
-    const getInputClass = (isFieldValid: boolean) => !submitted || isFieldValid ? styles.input : `${styles.input} ${styles.inputError}`;
-    const getSelectClass = (isFieldValid: boolean) => !submitted || isFieldValid ? styles.select : `${styles.select} ${styles.inputError}`;
-    const getCheckboxClass = (isFieldValid: boolean) => !submitted || isFieldValid ? styles.checkbox : `${styles.checkbox} ${styles.inputError}`;
+    const getInputClass = (valid: boolean) => !submitted || valid ? styles.input : `${styles.input} ${styles.inputError}`;
+    const getSelectClass = (valid: boolean) => !submitted || valid ? styles.select : `${styles.select} ${styles.inputError}`;
+    const getCheckboxClass = (valid: boolean) => !submitted || valid ? styles.checkbox : `${styles.checkbox} ${styles.inputError}`;
 
     return (
         <form onSubmit={handleSubmit} className={styles.container}>
@@ -57,10 +63,10 @@ export default function UserConditionsAsset({ formData, onChange, onSubmit, onBa
                     name="montageAngle"
                     value={montageAngle}
                     onChange={onChange}
-                    placeholder="z.B. 30"
                     min={0}
                     max={90}
                     step={5}
+                    placeholder="z.B. 30"
                     className={getInputClass(angleValid)}
                 />
             </div>
@@ -94,10 +100,10 @@ export default function UserConditionsAsset({ formData, onChange, onSubmit, onBa
                     name="montageShadeFactor"
                     value={montageShadeFactor}
                     onChange={onChange}
-                    placeholder="z.B. 0.3"
                     min={0}
                     max={1}
                     step={0.1}
+                    placeholder="z.B. 0.3"
                     className={getInputClass(shadeValid)}
                 />
             </div>
@@ -105,8 +111,10 @@ export default function UserConditionsAsset({ formData, onChange, onSubmit, onBa
             {submitted && !isValid && <p className={styles.error}>Bitte fülle alle Felder korrekt aus.</p>}
 
             <div className={styles.buttonGroup}>
-                <button type="button" className={styles.buttonBack} onClick={onBack}>Zurück</button>
-                <button type="submit" className={styles.button}>Speichern und weiter</button>
+                <button type="button" className={styles.buttonBack} onClick={onBack} disabled={isLoading}>Zurück</button>
+                <button type="submit" className={styles.button} disabled={isLoading}>
+                    {isLoading ? "Speichern..." : "Speichern und weiter"}
+                </button>
             </div>
         </form>
     );

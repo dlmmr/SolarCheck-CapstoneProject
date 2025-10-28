@@ -107,3 +107,10 @@ h1 {
     color: #ff7272;
     font-size: 0.9rem;
 }
+
+.success {
+    color: #4d8dff; /* z. B. blau für Erfolg */
+    font-size: 0.9rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}

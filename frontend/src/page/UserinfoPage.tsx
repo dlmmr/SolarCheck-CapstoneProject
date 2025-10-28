@@ -17,6 +17,7 @@ export default function UserinfoPage() {
     });
 
     const [message, setMessage] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -26,44 +27,94 @@ export default function UserinfoPage() {
         }));
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const validateAndParseNumber = (value: string | number, fieldName: string): number | null => {
+        // If already a number, validate it
+        if (typeof value === "number") {
+            return Number.isFinite(value) ? value : null;
+        }
+
+        // Trim whitespace from string
+        const trimmed = String(value).trim();
+
+        // Check if empty
+        if (trimmed === "") {
+            setMessage(`❌ ${fieldName} darf nicht leer sein.`);
+            return null;
+        }
+
+        // Parse to number
+        const parsed = parseFloat(trimmed);
+
+        // Validate the parsed number
+        if (!Number.isFinite(parsed) || isNaN(parsed)) {
+            setMessage(`❌ ${fieldName} muss eine gültige Zahl sein.`);
+            return null;
+        }
+
+        // Optional: Check for negative values if they don't make sense for your use case
+        if (parsed < 0) {
+            setMessage(`❌ ${fieldName} kann nicht negativ sein.`);
+            return null;
+        }
+
+        return parsed;
+    };
+
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!userId) {
             setMessage("❌ Keine Benutzer-ID vorhanden!");
             return;
         }
 
+        // Validate and parse numeric fields
+        const userRateOfElectricity = validateAndParseNumber(formData.userRateOfElectricity, "Stromtarif");
+        if (userRateOfElectricity === null) return;
+
+        const userHouseholdNumber = validateAndParseNumber(formData.userHouseholdNumber, "Haushaltsgröße");
+        if (userHouseholdNumber === null) return;
+
+        const userElectricityConsumption = validateAndParseNumber(formData.userElectricityConsumption, "Stromverbrauch");
+        if (userElectricityConsumption === null) return;
+
+        // Build UserInfo object only after successful validation
         const userInfo: UserInfo = {
-            userRateOfElectricity: Number(formData.userRateOfElectricity),
-            userHouseholdNumber: Number(formData.userHouseholdNumber),
-            userElectricityConsumption: Number(formData.userElectricityConsumption),
+            userRateOfElectricity: userRateOfElectricity,
+            userHouseholdNumber: userHouseholdNumber,
+            userElectricityConsumption: userElectricityConsumption,
         };
 
-        axios.put<UserResponseDTO>(`/api/home/${userId}/info`, userInfo)
-            .then(res => {
-                setMessage("✅ Daten erfolgreich gespeichert!");
-                navigate("/userConditions", { state: { user: res.data, formData: userInfo } });
-            })
-            .catch((error) => {
-                console.error("API Error:", error);
-                const errorMsg = error.response?.data?.message || "Fehler beim Speichern der Daten.";
-                setMessage(`❌ ${errorMsg}`);
-            });
+        setIsLoading(true);
+        try {
+            const res = await axios.put<UserResponseDTO>(`/api/home/${userId}/info`, userInfo);
+            setMessage("✅ Daten erfolgreich gespeichert!");
+            navigate("/userConditions", { state: { user: res.data, formData: userInfo } });
+        } catch (error: unknown) {
+            console.error("API Error:", error);
+
+            let errorMsg = "Fehler beim Speichern der Daten.";
+            if (axios.isAxiosError(error) && error.response?.data) {
+                errorMsg = (error.response.data as { message?: string }).message || errorMsg;
+            }
+
+            setMessage(`❌ ${errorMsg}`);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        <div className="max-w-md mx-auto p-6">
-            <h2 className="text-2xl font-semibold mb-4">Deine Angaben</h2>
+        <div className="page">
+            <h2>Deine Angaben</h2>
             <UserinfoAsset
                 formData={formData}
                 onChange={handleChange}
                 onSubmit={handleSubmit}
                 onBack={() => navigate("/", { state: { formData } })}
+                isLoading={isLoading}
             />
             {message && (
-                <p className={`mt-4 text-center ${message.startsWith("✅") ? "text-green-600" : "text-red-600"}`}>
-                    {message}
-                </p>
+                <p className={message.startsWith("✅") ? "success" : "error"}>{message}</p>
             )}
         </div>
     );

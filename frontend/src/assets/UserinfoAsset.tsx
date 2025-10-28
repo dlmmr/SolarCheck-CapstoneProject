@@ -12,11 +12,17 @@ interface UserinfoAssetProps {
     readonly onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
     readonly onSubmit: (e: FormEvent<HTMLFormElement>) => void;
     readonly onBack: () => void;
+    readonly isLoading?: boolean;
 }
 
-export default function UserinfoAsset({ formData, onChange, onSubmit, onBack }: UserinfoAssetProps) {
+export default function UserinfoAsset({
+                                          formData,
+                                          onChange,
+                                          onSubmit,
+                                          onBack,
+                                          isLoading = false,
+                                      }: UserinfoAssetProps) {
     const [submitted, setSubmitted] = useState(false);
-
     const { userRateOfElectricity = "", userHouseholdNumber = "", userElectricityConsumption = "" } = formData;
 
     const isRateValid = userRateOfElectricity !== "" && userRateOfElectricity >= 1 && userRateOfElectricity <= 500;
@@ -30,7 +36,7 @@ export default function UserinfoAsset({ formData, onChange, onSubmit, onBack }: 
         if (isValid) onSubmit(e);
     };
 
-    const getInputClass = (isFieldValid: boolean) => !submitted || isFieldValid ? styles.input : `${styles.input} ${styles.inputError}`;
+    const getInputClass = (valid: boolean) => !submitted || valid ? styles.input : `${styles.input} ${styles.inputError}`;
 
     return (
         <form onSubmit={handleSubmit} className={styles.container}>
@@ -85,8 +91,10 @@ export default function UserinfoAsset({ formData, onChange, onSubmit, onBack }: 
             {submitted && !isValid && <p className={styles.error}>Bitte fülle alle Felder korrekt aus.</p>}
 
             <div className={styles.buttonGroup}>
-                <button type="button" className={styles.buttonBack} onClick={onBack}>Zurück</button>
-                <button type="submit" className={styles.button}>Speichern und weiter</button>
+                <button type="button" className={styles.buttonBack} onClick={onBack} disabled={isLoading}>Zurück</button>
+                <button type="submit" className={styles.button} disabled={isLoading}>
+                    {isLoading ? "Speichern..." : "Speichern und weiter"}
+                </button>
             </div>
         </form>
     );

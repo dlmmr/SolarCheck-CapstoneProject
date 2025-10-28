@@ -11,7 +11,7 @@ export default function ResultAsset({ user, goBack }: Props) {
         return (
             <div className={styles.container}>
                 <h2>Ergebnis</h2>
-                <p className="text-red-600">Keine Berechnung vorhanden.</p>
+                <p className={styles.error}>Keine Berechnung vorhanden.</p>
                 <button className={styles.button} onClick={goBack}>Zurück</button>
             </div>
         );
