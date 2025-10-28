@@ -1,4 +1,13 @@
 /* App.css */
+:root {
+    --bg: #ffffff;
+    --text: #111111;
+    --primary: #005fcc;
+    --error: #b00020;
+
+    --bg-input: #ffffff;
+    --border: #666666;
+}
 
 html, body, #root {
     margin: 0;

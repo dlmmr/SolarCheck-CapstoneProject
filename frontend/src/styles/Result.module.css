@@ -1,14 +1,14 @@
 .container {
-    background-color: #ffffff;
+    background-color: #161a22;
     padding: 60px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 24px rgba(0,0,0,0.4);
     max-width: 420px;
     margin: 40px auto;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    color: #222;
+    color: #e6e6e6;
     font-family: system-ui, sans-serif;
 }
 
@@ -25,11 +25,11 @@
 
 .value {
     font-weight: 500;
-    color: #007bff;
+    color: #4d8dff;
 }
 
 .button {
-    background-color: #007bff;
+    background-color: #4d8dff;
     color: white;
     padding: 12px 16px;
     border: none;
@@ -41,6 +41,6 @@
 }
 
 .button:hover {
-    background-color: #0056b3;
+    background-color: #3b6ec7;
     transform: translateY(-1px);
 }

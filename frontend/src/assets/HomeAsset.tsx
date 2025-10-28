@@ -2,8 +2,8 @@
 import styles from "../styles/Home.module.css";
 
 interface HomeAssetProps {
-    message: string;
-    onCreateUser: () => void;
+    readonly message: string;
+    readonly onCreateUser: () => void;
 }
 
 export default function HomeAsset({ message, onCreateUser }: HomeAssetProps) {

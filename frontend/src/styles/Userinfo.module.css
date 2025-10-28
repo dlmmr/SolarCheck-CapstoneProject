@@ -1,60 +1,54 @@
 .container {
-    background-color: #ffffff;
+    background-color: #161a22;
     padding: 60px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 24px rgba(0,0,0,0.4);
     max-width: 420px;
     margin: 40px auto;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    color: #222;
+    color: #e6e6e6;
     font-family: system-ui, sans-serif;
 }
 
-/* Beschriftungen */
 .label {
     font-weight: 600;
     margin-bottom: 6px;
+    color: #ffffff;
     display: block;
-    color: #333;
 }
 
-/* Standard Input */
 .input {
     width: 90%;
     padding: 10px 12px;
-    border: 1px solid #ccc;
+    background: #0f1218;
+    border: 1px solid #444b57;
     border-radius: 6px;
     font-size: 15px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    color: #e6e6e6;
 }
 
-/* Fokuszustand */
 .input:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+    border-color: #4d8dff;
+    background: #11141c;
     outline: none;
 }
 
-/* Fehlerzustand */
 .inputError {
-    border-color: #e74c3c !important;
-    background-color: #ffecec;
-    box-shadow: 0 0 4px rgba(231, 76, 60, 0.3);
+    border-color: #d64545 !important;
+    background-color: #2a1212;
 }
 
-/* Fehlermeldungstext */
 .error {
-    color: #e74c3c;
+    color: #ff7272;
     font-size: 0.9rem;
     margin-top: -10px;
     margin-bottom: 10px;
 }
 
-/* Submit-Button */
 .button {
-    background-color: #007bff;
+    background-color: #4d8dff;
     color: white;
     padding: 12px 16px;
     border: none;
@@ -65,9 +59,8 @@
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-/* Hover- und Disabled-Zustände */
 .button:hover {
-    background-color: #0056b3;
+    background-color: #3b6ec7;
     transform: translateY(-1px);
 }
 

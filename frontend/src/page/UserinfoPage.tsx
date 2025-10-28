@@ -10,7 +10,6 @@ export default function UserinfoPage() {
     const location = useLocation();
     const { userId, formData: initialData } = location.state || {};
 
-    // State nutzt UserInfoFormData (erlaubt leere Strings)
     const [formData, setFormData] = useState<UserInfoFormData>({
         userRateOfElectricity: initialData?.userRateOfElectricity ?? "",
         userHouseholdNumber: initialData?.userHouseholdNumber ?? "",
@@ -20,8 +19,7 @@ export default function UserinfoPage() {
     const [message, setMessage] = useState("");
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const target = e.target as HTMLInputElement;
-        const { name, value } = target;
+        const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value === "" ? "" : Number(value),
@@ -35,7 +33,6 @@ export default function UserinfoPage() {
             return;
         }
 
-        // Konvertiere formData zu UserInfo (nur numbers) für die API
         const userInfo: UserInfo = {
             userRateOfElectricity: Number(formData.userRateOfElectricity),
             userHouseholdNumber: Number(formData.userHouseholdNumber),
@@ -44,9 +41,8 @@ export default function UserinfoPage() {
 
         axios.put<UserResponseDTO>(`/api/home/${userId}/info`, userInfo)
             .then(res => {
-                const updatedUser = res.data;
                 setMessage("✅ Daten erfolgreich gespeichert!");
-                navigate("/userConditions", { state: { user: updatedUser, formData: userInfo } });
+                navigate("/userConditions", { state: { user: res.data, formData: userInfo } });
             })
             .catch((error) => {
                 console.error("API Error:", error);

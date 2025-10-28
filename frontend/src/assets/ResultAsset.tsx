@@ -2,8 +2,8 @@ import type { UserResponseDTO } from "../dto/UserResponseDTO";
 import styles from "../styles/Result.module.css";
 
 interface Props {
-    user: UserResponseDTO | undefined;
-    goBack: () => void;
+    readonly user: UserResponseDTO | undefined;
+    readonly goBack: () => void;
 }
 
 export default function ResultAsset({ user, goBack }: Props) {

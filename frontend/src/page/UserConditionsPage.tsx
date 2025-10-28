@@ -10,35 +10,21 @@ export default function UserConditionsPage() {
     const navigate = useNavigate();
     const { user, formData: initialData } = location.state as { user: UserResponseDTO, formData?: UserConditionsDTO };
 
-    // State nutzt UserConditionsFormData (erlaubt leere Strings)
-    const [formData, setFormData] = useState<UserConditionsFormData>(
-        initialData ?? {
-            montagePlace: user?.userConditions?.montagePlace ?? false,
-            montageAngle: user?.userConditions?.montageAngle ?? "",
-            montageDirection: user?.userConditions?.montageDirection ?? "",
-            montageShadeFactor: user?.userConditions?.montageShadeFactor ?? "",
-        }
-    );
+    const [formData, setFormData] = useState<UserConditionsFormData>({
+        montagePlace: initialData?.montagePlace ?? user?.userConditions?.montagePlace ?? false,
+        montageAngle: initialData?.montageAngle ?? user?.userConditions?.montageAngle ?? "",
+        montageDirection: initialData?.montageDirection ?? user?.userConditions?.montageDirection ?? "",
+        montageShadeFactor: initialData?.montageShadeFactor ?? user?.userConditions?.montageShadeFactor ?? "",
+    });
 
     const [message, setMessage] = useState("");
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const target = e.target;
-        let value: string | number | boolean;
-
-        if (target instanceof HTMLInputElement) {
-            if (target.type === "checkbox") {
-                value = target.checked;
-            } else if (target.type === "number") {
-                value = target.value === "" ? "" : Number(target.value);
-            } else {
-                value = target.value;
-            }
-        } else {
-            value = target.value;
-        }
-
-        setFormData(prev => ({ ...prev, [target.name]: value }));
+        const { name, value, type, checked } = e.target as HTMLInputElement;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === "checkbox" ? checked : type === "number" ? (value === "" ? "" : Number(value)) : value
+        }));
     };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -48,7 +34,6 @@ export default function UserConditionsPage() {
             return;
         }
 
-        // Konvertiere zu UserConditionsDTO (nur numbers) für die API
         const userConditions: UserConditionsDTO = {
             montagePlace: formData.montagePlace,
             montageAngle: Number(formData.montageAngle),
@@ -59,10 +44,8 @@ export default function UserConditionsPage() {
         try {
             await axios.put<UserResponseDTO>(`/api/home/${user.userId}/conditions`, userConditions);
             const resultResponse = await axios.post<UserResponseDTO>(`/api/home/${user.userId}/result`);
-            const resultUser = resultResponse.data;
-
             setMessage("✅ Berechnung erfolgreich!");
-            navigate("/result", { state: { user: resultUser } });
+            navigate("/result", { state: { user: resultResponse.data } });
         } catch (error) {
             console.error("API Error:", error);
             setMessage("❌ Fehler beim Speichern oder Berechnen.");

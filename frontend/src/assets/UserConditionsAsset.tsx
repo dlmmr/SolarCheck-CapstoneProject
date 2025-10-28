@@ -1,7 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import styles from "../styles/UserConditions.module.css";
 
-// Eigener Type für das Formular - erlaubt leere Strings/undefined
 export interface UserConditionsFormData {
     montagePlace: boolean;
     montageAngle: number | "";
@@ -10,87 +9,55 @@ export interface UserConditionsFormData {
 }
 
 interface FormUserConditionsProps {
-    formData: UserConditionsFormData;
-    onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
-    onSubmit: (e: FormEvent<HTMLFormElement>) => void;
-    onBack: () => void;
+    readonly formData: UserConditionsFormData;
+    readonly onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+    readonly onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+    readonly onBack: () => void;
 }
 
-export default function UserConditionsAsset({
-                                                formData,
-                                                onChange,
-                                                onSubmit,
-                                                onBack,
-                                            }: FormUserConditionsProps) {
+export default function UserConditionsAsset({ formData, onChange, onSubmit, onBack }: FormUserConditionsProps) {
     const [submitted, setSubmitted] = useState(false);
 
-    // Validierung
-    const angleValid =
-        formData.montageAngle !== "" &&
-        Number(formData.montageAngle) >= 0 &&
-        Number(formData.montageAngle) <= 90;
+    const { montagePlace = false, montageAngle = "", montageDirection = "", montageShadeFactor = "" } = formData;
 
-    const directionValid =
-        formData.montageDirection !== "" &&
-        formData.montageDirection !== undefined;
-
-    const shadeValid =
-        formData.montageShadeFactor !== "" &&
-        Number(formData.montageShadeFactor) >= 0 &&
-        Number(formData.montageShadeFactor) <= 1;
-
-    const isValid =
-        formData.montagePlace === true &&
-        angleValid &&
-        directionValid &&
-        shadeValid;
+    const angleValid = montageAngle !== "" && montageAngle >= 0 && montageAngle <= 90;
+    const directionValid = montageDirection !== "";
+    const shadeValid = montageShadeFactor !== "" && montageShadeFactor >= 0 && montageShadeFactor <= 1;
+    const isValid = montagePlace && angleValid && directionValid && shadeValid;
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setSubmitted(true);
-
-        if (isValid) {
-            onSubmit(e);
-        }
+        if (isValid) onSubmit(e);
     };
 
-    // Hilfsfunktionen für CSS-Klassen
-    const getInputClass = (isFieldValid: boolean) =>
-        !submitted ? styles.input : isFieldValid ? styles.input : `${styles.input} ${styles.inputError}`;
-
-    const getSelectClass = (isFieldValid: boolean) =>
-        !submitted ? styles.select : isFieldValid ? styles.select : `${styles.select} ${styles.inputError}`;
-
-    const getCheckboxClass = (isFieldValid: boolean) =>
-        !submitted ? styles.checkbox : isFieldValid ? styles.checkbox : `${styles.checkbox} ${styles.inputError}`;
+    const getInputClass = (isFieldValid: boolean) => !submitted || isFieldValid ? styles.input : `${styles.input} ${styles.inputError}`;
+    const getSelectClass = (isFieldValid: boolean) => !submitted || isFieldValid ? styles.select : `${styles.select} ${styles.inputError}`;
+    const getCheckboxClass = (isFieldValid: boolean) => !submitted || isFieldValid ? styles.checkbox : `${styles.checkbox} ${styles.inputError}`;
 
     return (
         <form onSubmit={handleSubmit} className={styles.container}>
             <div className={styles.formGroup}>
-                <label htmlFor="montagePlace" className={styles.label}>
-                    Montage vorhanden
-                </label>
+                <label htmlFor="montagePlace" className={styles.label}>Montage vorhanden</label>
                 <input
                     id="montagePlace"
                     type="checkbox"
                     name="montagePlace"
-                    checked={!!formData.montagePlace}
+                    checked={montagePlace}
                     onChange={onChange}
-                    className={getCheckboxClass(formData.montagePlace)}
+                    className={getCheckboxClass(montagePlace)}
                 />
             </div>
 
             <div className={styles.formGroup}>
-                <label htmlFor="montageAngle" className={styles.label}>
-                    Montagewinkel (°)
-                </label>
+                <label htmlFor="montageAngle" className={styles.label}>Montagewinkel (°)</label>
                 <input
                     id="montageAngle"
-                    placeholder="z.B. 30"
                     type="number"
                     name="montageAngle"
-                    value={formData.montageAngle}
+                    value={montageAngle}
                     onChange={onChange}
+                    placeholder="z.B. 30"
                     min={0}
                     max={90}
                     step={5}
@@ -99,13 +66,11 @@ export default function UserConditionsAsset({
             </div>
 
             <div className={styles.formGroup}>
-                <label htmlFor="montageDirection" className={styles.label}>
-                    Ausrichtung
-                </label>
+                <label htmlFor="montageDirection" className={styles.label}>Ausrichtung</label>
                 <select
                     id="montageDirection"
                     name="montageDirection"
-                    value={formData.montageDirection}
+                    value={montageDirection}
                     onChange={onChange}
                     className={getSelectClass(directionValid)}
                 >
@@ -122,16 +87,14 @@ export default function UserConditionsAsset({
             </div>
 
             <div className={styles.formGroup}>
-                <label htmlFor="montageShadeFactor" className={styles.label}>
-                    Verschattung am Tag (0 = keine, 1 = komplett)
-                </label>
+                <label htmlFor="montageShadeFactor" className={styles.label}>Verschattung am Tag (0 = keine, 1 = komplett)</label>
                 <input
                     id="montageShadeFactor"
-                    placeholder="z.B. 0.3"
                     type="number"
                     name="montageShadeFactor"
-                    value={formData.montageShadeFactor}
+                    value={montageShadeFactor}
                     onChange={onChange}
+                    placeholder="z.B. 0.3"
                     min={0}
                     max={1}
                     step={0.1}
@@ -139,17 +102,11 @@ export default function UserConditionsAsset({
                 />
             </div>
 
-            {submitted && !isValid && (
-                <p className={styles.error}>Bitte fülle alle Felder korrekt aus.</p>
-            )}
+            {submitted && !isValid && <p className={styles.error}>Bitte fülle alle Felder korrekt aus.</p>}
 
             <div className={styles.buttonGroup}>
-                <button type="button" className={styles.buttonBack} onClick={onBack}>
-                    Zurück
-                </button>
-                <button type="submit" className={styles.button}>
-                    Speichern und weiter
-                </button>
+                <button type="button" className={styles.buttonBack} onClick={onBack}>Zurück</button>
+                <button type="submit" className={styles.button}>Speichern und weiter</button>
             </div>
         </form>
     );
