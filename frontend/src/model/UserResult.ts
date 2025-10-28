@@ -1,5 +1,5 @@
 export interface UserResult {
     userPossibleElectricityGeneration: number;
-    userAmountofPossibleSavings: number;
+    userAmountOfPossibleSavings: number;
     userAmortisationTime: number;
 }

@@ -1,5 +1,5 @@
 
-import styles from "./HomeAsset.module.css";
+import styles from "../styles/Home.module.css";
 
 interface HomeAssetProps {
     message: string;
