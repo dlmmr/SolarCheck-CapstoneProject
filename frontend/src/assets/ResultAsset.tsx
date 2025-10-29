@@ -1,5 +1,5 @@
 import type { UserResponseDTO } from "../dto/UserResponseDTO";
-import styles from "../styles/Result.module.css";
+import "../app.css";
 
 interface Props {
     readonly user: UserResponseDTO | undefined;
@@ -9,10 +9,10 @@ interface Props {
 export default function ResultAsset({ user, goBack }: Props) {
     if (!user?.userResult) {
         return (
-            <div className={styles.container}>
+            <div className="FormAndResultContainer">
                 <h2>Ergebnis</h2>
-                <p className={styles.error}>Keine Berechnung vorhanden.</p>
-                <button className={styles.button} onClick={goBack}>Zurück</button>
+                <p className="FormAndResultError">Keine Berechnung vorhanden.</p>
+                <button className="FormAndResultButton" onClick={goBack}>Zurück</button>
             </div>
         );
     }
@@ -20,25 +20,25 @@ export default function ResultAsset({ user, goBack }: Props) {
     const { userPossibleElectricityGeneration, userAmountOfPossibleSavings, userAmortisationTime } = user.userResult;
 
     return (
-        <div className={styles.container}>
+        <div className="FormAndResultContainer">
             <h2>Ergebnis deines Balkonkraftwerks</h2>
 
-            <div className={styles.resultGroup}>
-                <span className={styles.label}>Jahresertrag:</span>
-                <span className={styles.value}>{userPossibleElectricityGeneration} kWh</span>
+            <div className="FormAndResultContent">
+                <div className="ResultGroup">
+                    <span className="ResultLabel">Jahresertrag:</span>
+                    <span className="ResultValue">{userPossibleElectricityGeneration} kWh</span>
+                </div>
+                <div className="ResultGroup">
+                    <span className="ResultLabel">Ersparnis:</span>
+                    <span className="ResultValue">{userAmountOfPossibleSavings} €</span>
+                </div>
+                <div className="ResultGroup">
+                    <span className="ResultLabel">Amortisation:</span>
+                    <span className="ResultValue">{userAmortisationTime} Jahre</span>
+                </div>
             </div>
 
-            <div className={styles.resultGroup}>
-                <span className={styles.label}>Ersparnis:</span>
-                <span className={styles.value}>{userAmountOfPossibleSavings} €</span>
-            </div>
-
-            <div className={styles.resultGroup}>
-                <span className={styles.label}>Amortisation:</span>
-                <span className={styles.value}>{userAmortisationTime} Jahre</span>
-            </div>
-
-            <button className={styles.button} onClick={goBack}>Zurück</button>
+            <button className="FormAndResultButton" onClick={goBack}>Zurück</button>
         </div>
     );
 }

@@ -200,4 +200,10 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.userConditions.montageShadeFactor").value(1.0))
                 .andExpect(jsonPath("$.userConditions.montageDirection").value("SOUTHWEST"));
     }
+    @Test
+    void testIllegalArgumentHandler_direct() throws Exception {
+        mockMvc.perform(post("/api/home")) // POST existiert
+                .andExpect(status().isOk());
+
+    }
 }

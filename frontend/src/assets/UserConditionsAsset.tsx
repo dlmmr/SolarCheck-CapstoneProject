@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import styles from "../styles/UserConditions.module.css";
+import "../app.css";
 
 export interface UserConditionsFormData {
     montagePlace: boolean;
@@ -8,9 +8,9 @@ export interface UserConditionsFormData {
     montageShadeFactor: number | "";
 }
 
-interface FormUserConditionsProps {
+interface UserConditionsAssetProps {
     readonly formData: UserConditionsFormData;
-    readonly onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+    readonly onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
     readonly onSubmit: (e: FormEvent<HTMLFormElement>) => void;
     readonly onBack: () => void;
     readonly isLoading?: boolean;
@@ -22,7 +22,7 @@ export default function UserConditionsAsset({
                                                 onSubmit,
                                                 onBack,
                                                 isLoading = false,
-                                            }: FormUserConditionsProps) {
+                                            }: UserConditionsAssetProps) {
     const [submitted, setSubmitted] = useState(false);
     const { montagePlace = false, montageAngle = "", montageDirection = "", montageShadeFactor = "" } = formData;
 
@@ -37,83 +37,90 @@ export default function UserConditionsAsset({
         if (isValid) onSubmit(e);
     };
 
-    const getInputClass = (valid: boolean) => !submitted || valid ? styles.input : `${styles.input} ${styles.inputError}`;
-    const getSelectClass = (valid: boolean) => !submitted || valid ? styles.select : `${styles.select} ${styles.inputError}`;
-    const getCheckboxClass = (valid: boolean) => !submitted || valid ? styles.checkbox : `${styles.checkbox} ${styles.inputError}`;
+    const getInputClass = (valid: boolean) =>
+        !submitted || valid ? "FormAndResultInput" : "FormAndResultInput FormAndResultInputError";
+    const getSelectClass = (valid: boolean) =>
+        !submitted || valid ? "FormAndResultInput" : "FormAndResultInput FormAndResultInputError";
 
     return (
-        <form onSubmit={handleSubmit} className={styles.container}>
-            <div className={styles.formGroup}>
-                <label htmlFor="montagePlace" className={styles.label}>Montage vorhanden</label>
-                <input
-                    id="montagePlace"
-                    type="checkbox"
-                    name="montagePlace"
-                    checked={montagePlace}
-                    onChange={onChange}
-                    className={getCheckboxClass(montagePlace)}
-                />
+        <form onSubmit={handleSubmit} className="FormAndResultContainer">
+            <div className="FormAndResultContent">
+                <div>
+                    <label htmlFor="montagePlace" className="FormAndResultLabel">Montage vorhanden</label>
+                    <input
+                        id="montagePlace"
+                        type="checkbox"
+                        name="montagePlace"
+                        checked={montagePlace}
+                        onChange={onChange}
+                        className="FormAndResultInput"
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="montageAngle" className="FormAndResultLabel">Montagewinkel (°)</label>
+                    <input
+                        id="montageAngle"
+                        type="number"
+                        name="montageAngle"
+                        value={montageAngle}
+                        onChange={onChange}
+                        min={0}
+                        max={90}
+                        step={5}
+                        placeholder="z.B. 30"
+                        className={getInputClass(angleValid)}
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="montageDirection" className="FormAndResultLabel">Ausrichtung</label>
+                    <select
+                        id="montageDirection"
+                        name="montageDirection"
+                        value={montageDirection}
+                        onChange={onChange}
+                        className={getSelectClass(directionValid)}
+                    >
+                        <option value="" disabled>Ausrichtung PV-Anlage</option>
+                        <option value="NORTH">Norden</option>
+                        <option value="NORTHEAST">Nordosten</option>
+                        <option value="EAST">Osten</option>
+                        <option value="SOUTHEAST">Südosten</option>
+                        <option value="SOUTH">Süden</option>
+                        <option value="SOUTHWEST">Südwesten</option>
+                        <option value="WEST">Westen</option>
+                        <option value="NORTHWEST">Nordwesten</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label htmlFor="montageShadeFactor" className="FormAndResultLabel">Verschattung am Tag (0 = keine, 1 = komplett)</label>
+                    <input
+                        id="montageShadeFactor"
+                        type="number"
+                        name="montageShadeFactor"
+                        value={montageShadeFactor}
+                        onChange={onChange}
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        placeholder="z.B. 0.3"
+                        className={getInputClass(shadeValid)}
+                    />
+                </div>
+
+                {submitted && !isValid && (
+                    <p className="FormAndResultError">Bitte fülle alle Felder korrekt aus.</p>
+                )}
             </div>
 
-            <div className={styles.formGroup}>
-                <label htmlFor="montageAngle" className={styles.label}>Montagewinkel (°)</label>
-                <input
-                    id="montageAngle"
-                    type="number"
-                    name="montageAngle"
-                    value={montageAngle}
-                    onChange={onChange}
-                    min={0}
-                    max={90}
-                    step={5}
-                    placeholder="z.B. 30"
-                    className={getInputClass(angleValid)}
-                />
-            </div>
-
-            <div className={styles.formGroup}>
-                <label htmlFor="montageDirection" className={styles.label}>Ausrichtung</label>
-                <select
-                    id="montageDirection"
-                    name="montageDirection"
-                    value={montageDirection}
-                    onChange={onChange}
-                    className={getSelectClass(directionValid)}
-                >
-                    <option value="" disabled>Ausrichtung PV-Anlage</option>
-                    <option value="NORTH">Norden</option>
-                    <option value="NORTHEAST">Nordosten</option>
-                    <option value="EAST">Osten</option>
-                    <option value="SOUTHEAST">Südosten</option>
-                    <option value="SOUTH">Süden</option>
-                    <option value="SOUTHWEST">Südwesten</option>
-                    <option value="WEST">Westen</option>
-                    <option value="NORTHWEST">Nordwesten</option>
-                </select>
-            </div>
-
-            <div className={styles.formGroup}>
-                <label htmlFor="montageShadeFactor" className={styles.label}>Verschattung am Tag (0 = keine, 1 = komplett)</label>
-                <input
-                    id="montageShadeFactor"
-                    type="number"
-                    name="montageShadeFactor"
-                    value={montageShadeFactor}
-                    onChange={onChange}
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    placeholder="z.B. 0.3"
-                    className={getInputClass(shadeValid)}
-                />
-            </div>
-
-            {submitted && !isValid && <p className={styles.error}>Bitte fülle alle Felder korrekt aus.</p>}
-
-            <div className={styles.buttonGroup}>
-                <button type="button" className={styles.buttonBack} onClick={onBack} disabled={isLoading}>Zurück</button>
-                <button type="submit" className={styles.button} disabled={isLoading}>
+            <div className="FormAndResultButtonGroup">
+                <button type="submit" className="FormAndResultButton" disabled={isLoading}>
                     {isLoading ? "Speichern..." : "Speichern und weiter"}
+                </button>
+                <button type="button" className="FormAndResultButtonBack" onClick={onBack} disabled={isLoading}>
+                    Zurück
                 </button>
             </div>
         </form>

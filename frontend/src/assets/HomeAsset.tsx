@@ -1,4 +1,3 @@
-
 import styles from "../styles/Home.module.css";
 
 interface HomeAssetProps {
@@ -7,22 +6,38 @@ interface HomeAssetProps {
 }
 
 export default function HomeAsset({ message, onCreateUser }: HomeAssetProps) {
+    const isSuccess = message.startsWith("✅");
+
     return (
-        <div className={styles.container}>
-            <h1 className={styles.title}>Willkommen zur SolarCheck-App</h1>
-            <p className={styles.text}>
-                Hier kannst du berechnen, ob sich ein Balkonkraftwerk für dich lohnt.
-            </p>
+        <main className={styles.HomeContainer} role="main">
+            <div className={styles.HomeContent}>
+                <h1 className={styles.HomeTitle}>
+                    Willkommen zur SolarCheck-App
+                </h1>
 
-            <button onClick={onCreateUser} className={styles.button}>
-                Los geht’s
-            </button>
-
-            {message && (
-                <p className={message.startsWith("✅") ? styles.success : styles.error}>
-                    {message}
+                <p className={styles.HomeText}>
+                    Hier kannst du berechnen, ob sich ein Balkonkraftwerk für dich lohnt.
                 </p>
-            )}
-        </div>
+
+                <button
+                    onClick={onCreateUser}
+                    className={styles.HomeButton}
+                    type="button"
+                    aria-label="Berechnung starten"
+                >
+                    Los geht's
+                </button>
+
+                {message && (
+                    <div
+                        className={isSuccess ? styles.HomeSuccess : styles.HomeError}
+                        role={isSuccess ? "status" : "alert"}
+                        aria-live="polite"
+                    >
+                        {message}
+                    </div>
+                )}
+            </div>
+        </main>
     );
 }
