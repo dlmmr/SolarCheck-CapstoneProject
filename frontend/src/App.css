@@ -1,42 +1,411 @@
+/* ====================================
+   CSS Custom Properties (Variablen)
+   ==================================== */
+:root {
+    /* Farben */
+    --bg-primary: #0c0c12;
+    --bg-secondary: #1a1f2b;
+    --bg-card: #1f2233;
+    --bg-input: #0f1218;
+    --bg-input-focus: #11141c;
+    --bg-button-secondary: #2d2f36;
+    --bg-button-secondary-hover: #26272c;
+
+    --text-primary: #ffffff;
+    --text-secondary: #e6e6e6;
+    --text-muted: #d5d5d5;
+    --text-error: #ff7272;
+
+    --color-primary: #4d8dff;
+    --color-primary-light: #1ed6ff;
+    --color-primary-dark: #3b6ec7;
+
+    --border-color: #444b57;
+    --error-bg: #2a1212;
+
+    /* Gradienten */
+    --gradient-text: linear-gradient(90deg, #4d8dff, #1ed6ff);
+    --gradient-bg: linear-gradient(135deg, #0c0c12 0%, #1a1f2b 100%);
+
+    /* Schatten */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 0 32px rgba(0, 0, 0, 0.6);
+    --shadow-button: 0 4px 16px rgba(30, 214, 255, 0.4);
+
+    /* Spacing */
+    --spacing-xs: 6px;
+    --spacing-sm: 12px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 28px;
+    --spacing-2xl: 40px;
+    --spacing-3xl: 60px;
+    --spacing-4xl: 80px;
+
+    /* Border Radius */
+    --radius-sm: 10px;
+    --radius-md: 12px;
+    --radius-lg: 14px;
+    --radius-xl: 16px;
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.25s ease;
+    --transition-slow: 0.35s ease;
+
+    /* Font Sizes */
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.1rem;
+    --font-size-xl: 1.2rem;
+    --font-size-2xl: 2rem;
+    --font-size-3xl: 3rem;
+
+    /* Container Sizes */
+    --container-max-width: 520px;
+    --container-min-height: 600px;
+}
+
+/* ====================================
+   Base Styles
+   ==================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--gradient-bg);
+    color: var(--text-secondary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-lg);
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* ====================================
+   Typography
+   ==================================== */
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    color: var(--text-primary);
+    font-weight: 600;
+    line-height: 1.2;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+h1 {
+    font-size: var(--font-size-2xl);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+h2 {
+    font-size: 1.75rem;
 }
 
-.card {
-  padding: 2em;
+p {
+    margin: 0;
+    line-height: 1.5;
 }
 
-.read-the-docs {
-  color: #888;
+/* ====================================
+   Form Container (Shared)
+   ==================================== */
+.FormAndResultContainer {
+    padding: var(--spacing-4xl);
+    background-color: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    max-width: var(--container-max-width);
+    min-height: var(--container-min-height);
+    width: 100%;
+    margin: var(--spacing-3xl) auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    color: var(--text-primary);
+    text-align: center;
+    align-items: center;
+}
+
+.FormAndResultContent {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-lg);
+    width: 100%;
+}
+
+/* ====================================
+   Form Elements
+   ==================================== */
+.FormAndResultLabel {
+    font-weight: 600;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-primary);
+    display: block;
+    text-align: left;
+    font-size: var(--font-size-base);
+}
+
+.FormAndResultInput,
+.FormAndResultSelect {
+    width: 100%;
+    padding: 14px 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    transition: border-color var(--transition-base),
+    background var(--transition-base),
+    box-shadow var(--transition-base);
+    font-family: inherit;
+}
+
+.FormAndResultInput:focus,
+.FormAndResultSelect:focus {
+    border-color: var(--color-primary);
+    background: var(--bg-input-focus);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(77, 141, 255, 0.1);
+}
+
+.FormAndResultInput::placeholder {
+    color: #888;
+}
+
+.FormAndResultInputError {
+    border-color: var(--text-error) !important;
+    background-color: var(--error-bg) !important;
+}
+
+.FormAndResultInput:disabled,
+.FormAndResultSelect:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Select specific styling */
+.FormAndResultSelect {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234d8dff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 20px;
+    padding-right: 40px;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+input[type="checkbox"]:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ====================================
+   Buttons
+   ==================================== */
+.FormAndResultButtonGroup {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: var(--spacing-sm);
+}
+
+.FormAndResultButton,
+.FormAndResultButtonBack {
+    padding: 16px 36px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    font-family: inherit;
+    min-width: 120px;
+}
+
+.FormAndResultButton:focus,
+.FormAndResultButtonBack:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Primary Button */
+.FormAndResultButton {
+    background-color: var(--color-primary-dark);
+    color: var(--text-primary);
+}
+
+.FormAndResultButton:hover:not(:disabled) {
+    background-color: var(--color-primary-light);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-button);
+}
+
+.FormAndResultButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.FormAndResultButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Secondary Button */
+.FormAndResultButtonBack {
+    background-color: var(--bg-button-secondary);
+    color: #c8c8c8;
+}
+
+.FormAndResultButtonBack:hover:not(:disabled) {
+    background-color: var(--bg-button-secondary-hover);
+    transform: translateY(-1px);
+}
+
+/* ====================================
+   Messages (Error/Success)
+   ==================================== */
+.FormAndResultError,
+.FormAndResultSuccess {
+    font-size: var(--font-size-base);
+    margin-top: var(--spacing-md);
+    text-align: center;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+}
+
+.FormAndResultError {
+    color: var(--text-error);
+    background-color: rgba(255, 114, 114, 0.1);
+    border: 1px solid rgba(255, 114, 114, 0.3);
+}
+
+.FormAndResultSuccess {
+    color: var(--color-primary);
+    background-color: rgba(77, 141, 255, 0.1);
+    border: 1px solid rgba(77, 141, 255, 0.3);
+}
+
+/* ====================================
+   Result Display
+   ==================================== */
+.ResultGroup {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-base);
+    width: 100%;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ResultGroup:last-child {
+    border-bottom: none;
+}
+
+.ResultLabel {
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.ResultValue {
+    font-weight: 700;
+    color: var(--color-primary-light);
+    font-size: var(--font-size-lg);
+}
+
+/* ====================================
+   Responsive Design
+   ==================================== */
+@media (max-width: 640px) {
+    :root {
+        --spacing-4xl: 40px;
+        --font-size-3xl: 2rem;
+    }
+
+    .FormAndResultContainer {
+        padding: var(--spacing-2xl);
+        margin: var(--spacing-lg) auto;
+        min-height: auto;
+    }
+
+    .FormAndResultButton,
+    .FormAndResultButtonBack {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .FormAndResultButtonGroup {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .FormAndResultContainer {
+        padding: var(--spacing-lg);
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.35rem;
+    }
+}
+
+/* ====================================
+   Accessibility Improvements
+   ==================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus visible for keyboard navigation */
+:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* Skip to main content link (for screen readers) */
+.skip-to-main {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--color-primary);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100;
+}
+
+.skip-to-main:focus {
+    top: 0;
 }

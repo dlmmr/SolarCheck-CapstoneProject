@@ -1,0 +1,121 @@
+/* Home.module.css - Spezifische Styles für die Home-Seite */
+
+.HomeContainer {
+    padding: var(--spacing-4xl);
+    background-color: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    max-width: var(--container-max-width);
+    width: 100%;
+    margin: var(--spacing-3xl) auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.HomeContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xl);
+    width: 100%;
+}
+
+.HomeTitle {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-sm);
+    line-height: 1.1;
+}
+
+.HomeText {
+    font-size: var(--font-size-xl);
+    color: var(--text-muted);
+    max-width: 420px;
+    line-height: 1.6;
+}
+
+.HomeButton {
+    padding: 18px 48px;
+    background-color: var(--color-primary-dark);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    margin-top: var(--spacing-md);
+    font-family: inherit;
+}
+
+.HomeButton:hover {
+    background-color: var(--color-primary-light);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-button);
+}
+
+.HomeButton:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+.HomeButton:active {
+    transform: translateY(0);
+}
+
+.HomeError {
+    color: var(--text-error);
+    font-size: var(--font-size-base);
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background-color: rgba(255, 114, 114, 0.1);
+    border: 1px solid rgba(255, 114, 114, 0.3);
+    border-radius: var(--radius-sm);
+}
+
+.HomeSuccess {
+    color: var(--color-primary);
+    font-size: var(--font-size-base);
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background-color: rgba(77, 141, 255, 0.1);
+    border: 1px solid rgba(77, 141, 255, 0.3);
+    border-radius: var(--radius-sm);
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 640px) {
+    .HomeContainer {
+        padding: var(--spacing-2xl);
+    }
+
+    .HomeTitle {
+        font-size: 2rem;
+    }
+
+    .HomeText {
+        font-size: var(--font-size-base);
+    }
+
+    .HomeButton {
+        width: 100%;
+        padding: 16px 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .HomeContainer {
+        padding: var(--spacing-lg);
+    }
+
+    .HomeTitle {
+        font-size: 1.75rem;
+    }
+}
