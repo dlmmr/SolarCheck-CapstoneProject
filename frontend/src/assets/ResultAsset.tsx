@@ -21,7 +21,6 @@ export default function ResultAsset({ user, goBack }: Props) {
 
     return (
         <div className="FormAndResultContainer">
-            <h2>Ergebnis deines Balkonkraftwerks</h2>
 
             <div className="FormAndResultContent">
                 <div className="ResultGroup">

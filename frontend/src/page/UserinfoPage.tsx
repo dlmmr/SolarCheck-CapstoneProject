@@ -100,7 +100,7 @@ export default function UserinfoPage() {
 
     return (
         <div className="page">
-            <h2>Deine Angaben</h2>
+            <h1>Deine Angaben</h1>
             <UserinfoAsset
                 formData={formData}
                 onChange={handleChange}

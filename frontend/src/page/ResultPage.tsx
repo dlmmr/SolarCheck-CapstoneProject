@@ -19,6 +19,7 @@ export default function ResultPage() {
 
     return (
         <div className="page">
+            <h1>Ergebnis deines Balkonkraftwerks</h1>
             <ResultAsset user={user} goBack={goBack} />
         </div>
     );
