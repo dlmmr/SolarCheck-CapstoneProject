@@ -1,10 +1,11 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
+import type { Direction } from "../dto/Direction";
 import "../app.css";
 
 export interface UserConditionsFormData {
     montagePlace: boolean;
     montageAngle: number | "";
-    montageDirection: string;
+    montageDirection: "" | Direction;
     montageShadeFactor: number | "";
 }
 
@@ -16,6 +17,18 @@ interface UserConditionsAssetProps {
     readonly isLoading?: boolean;
 }
 
+// Runtime gültige Richtungsliste
+const DIRECTION_LABELS: Record<Direction, string> = {
+    NORTH: "Norden",
+    NORTHEAST: "Nordosten",
+    EAST: "Osten",
+    SOUTHEAST: "Südosten",
+    SOUTH: "Süden",
+    SOUTHWEST: "Südwesten",
+    WEST: "Westen",
+    NORTHWEST: "Nordwesten",
+};
+
 export default function UserConditionsAsset({
                                                 formData,
                                                 onChange,
@@ -24,7 +37,7 @@ export default function UserConditionsAsset({
                                                 isLoading = false,
                                             }: UserConditionsAssetProps) {
     const [submitted, setSubmitted] = useState(false);
-    const { montagePlace = false, montageAngle = "", montageDirection = "", montageShadeFactor = "" } = formData;
+    const { montagePlace, montageAngle, montageDirection, montageShadeFactor } = formData;
 
     const angleValid = montageAngle !== "" && montageAngle >= 0 && montageAngle <= 90;
     const directionValid = montageDirection !== "";
@@ -39,14 +52,12 @@ export default function UserConditionsAsset({
 
     const getInputClass = (valid: boolean) =>
         !submitted || valid ? "FormAndResultInput" : "FormAndResultInput FormAndResultInputError";
-    const getSelectClass = (valid: boolean) =>
-        !submitted || valid ? "FormAndResultInput" : "FormAndResultInput FormAndResultInputError";
 
     return (
         <form onSubmit={handleSubmit} className="FormAndResultContainer">
             <div className="FormAndResultContent">
-                <div>
-                    <label htmlFor="montagePlace" className="FormAndResultLabel">Montage vorhanden</label>
+                <label className="FormAndResultLabel">
+                    Montage vorhanden
                     <input
                         id="montagePlace"
                         type="checkbox"
@@ -55,10 +66,10 @@ export default function UserConditionsAsset({
                         onChange={onChange}
                         className="FormAndResultInput"
                     />
-                </div>
+                </label>
 
-                <div>
-                    <label htmlFor="montageAngle" className="FormAndResultLabel">Montagewinkel (°)</label>
+                <label className="FormAndResultLabel">
+                    Montagewinkel (°)
                     <input
                         id="montageAngle"
                         type="number"
@@ -71,31 +82,28 @@ export default function UserConditionsAsset({
                         placeholder="z.B. 30"
                         className={getInputClass(angleValid)}
                     />
-                </div>
+                </label>
 
-                <div>
-                    <label htmlFor="montageDirection" className="FormAndResultLabel">Ausrichtung</label>
+                <label className="FormAndResultLabel">
+                    Ausrichtung
                     <select
                         id="montageDirection"
                         name="montageDirection"
                         value={montageDirection}
                         onChange={onChange}
-                        className={getSelectClass(directionValid)}
+                        className={getInputClass(directionValid)}
                     >
-                        <option value="" disabled>Ausrichtung PV-Anlage</option>
-                        <option value="NORTH">Norden</option>
-                        <option value="NORTHEAST">Nordosten</option>
-                        <option value="EAST">Osten</option>
-                        <option value="SOUTHEAST">Südosten</option>
-                        <option value="SOUTH">Süden</option>
-                        <option value="SOUTHWEST">Südwesten</option>
-                        <option value="WEST">Westen</option>
-                        <option value="NORTHWEST">Nordwesten</option>
+                        <option value="">-- Bitte wählen --</option>
+                        {Object.entries(DIRECTION_LABELS).map(([key, label]) => (
+                            <option key={key} value={key}>
+                                {label}
+                            </option>
+                        ))}
                     </select>
-                </div>
+                </label>
 
-                <div>
-                    <label htmlFor="montageShadeFactor" className="FormAndResultLabel">Verschattung am Tag (0 = keine, 1 = komplett)</label>
+                <label className="FormAndResultLabel">
+                    Verschattung am Tag (0 = keine, 1 = komplett)
                     <input
                         id="montageShadeFactor"
                         type="number"
@@ -108,7 +116,7 @@ export default function UserConditionsAsset({
                         placeholder="z.B. 0.3"
                         className={getInputClass(shadeValid)}
                     />
-                </div>
+                </label>
 
                 {submitted && !isValid && (
                     <p className="FormAndResultError">Bitte fülle alle Felder korrekt aus.</p>

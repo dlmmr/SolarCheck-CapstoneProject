@@ -1,17 +1,8 @@
-export type Direction =
-    | ""
-    | "NORTH"
-    | "NORTHEAST"
-    | "EAST"
-    | "SOUTHEAST"
-    | "SOUTH"
-    | "SOUTHWEST"
-    | "WEST"
-    | "NORTHWEST";
+import type { Direction } from "./Direction";
 
 export interface UserConditionsDTO {
     montagePlace: boolean;
-    montageAngle: number;            // 0 - 90
-    montageDirection: Direction;     // Enum-String
-    montageShadeFactor: number;      // 0 - 1
+    montageAngle: number;        // 0-90
+    montageDirection: Direction; // DTO darf kein "" enthalten
+    montageShadeFactor: number;  // 0-1
 }

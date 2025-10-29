@@ -1,132 +1,96 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import UserConditionsAsset, { type UserConditionsFormData } from "../assets/UserConditionsAsset";
 import type { UserResponseDTO } from "../dto/UserResponseDTO";
 import type { UserConditionsDTO } from "../dto/UserConditionsDTO";
+import type { Direction } from "../dto/Direction";
+import UserConditionsAsset, { type UserConditionsFormData } from "../assets/UserConditionsAsset";
+
+const DIRECTION_VALUES: Direction[] = ["NORTH","NORTHEAST","EAST","SOUTHEAST","SOUTH","SOUTHWEST","WEST","NORTHWEST"];
 
 export default function UserConditionsPage() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { user, formData: initialData } = location.state as { user: UserResponseDTO, formData?: UserConditionsDTO };
+
+    const locationState = location.state as { user?: UserResponseDTO; formData?: UserConditionsDTO } | null;
+    const user = locationState?.user ?? null;
 
     const [formData, setFormData] = useState<UserConditionsFormData>({
-        montagePlace: initialData?.montagePlace ?? user?.userConditions?.montagePlace ?? false,
-        montageAngle: initialData?.montageAngle ?? user?.userConditions?.montageAngle ?? "",
-        montageDirection: initialData?.montageDirection ?? user?.userConditions?.montageDirection ?? "",
-        montageShadeFactor: initialData?.montageShadeFactor ?? user?.userConditions?.montageShadeFactor ?? "",
+        montagePlace: locationState?.formData?.montagePlace ?? user?.userConditions?.montagePlace ?? false,
+        montageAngle: locationState?.formData?.montageAngle ?? user?.userConditions?.montageAngle ?? "",
+        montageDirection: (locationState?.formData?.montageDirection ?? user?.userConditions?.montageDirection ?? "") as "" | Direction,
+        montageShadeFactor: locationState?.formData?.montageShadeFactor ?? user?.userConditions?.montageShadeFactor ?? "",
     });
 
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    useEffect(() => { if (!user) navigate("/"); }, [user, navigate]);
+    if (!user) return null;
+
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
-        const checked = 'checked' in e.target ? e.target.checked : undefined;
-
-        // Extrahiere die verschachtelte Ternary in eine Variable
-        let newValue: string | number | boolean | undefined;
-        if (type === "checkbox") {
-            newValue = checked;
-        } else if (type === "number") {
-            newValue = value === "" ? "" : Number(value);
-        } else {
-            newValue = value;
-        }
-
+        const checked = "checked" in e.target ? e.target.checked : undefined;
         setFormData(prev => ({
             ...prev,
-            [name]: newValue
+            [name]: type === "checkbox" ? checked : type === "number" ? (value === "" ? "" : Number(value)) : value,
         }));
     };
 
-
-    const validateAndParseNumber = (value: string | number, fieldName: string): number | null => {
-        // If already a number, validate it
-        if (typeof value === "number") {
-            return Number.isFinite(value) ? value : null;
-        }
-
-        // Trim whitespace from string
-        const trimmed = String(value).trim();
-
-        // Check if empty
-        if (trimmed === "") {
-            setMessage(`❌ ${fieldName} darf nicht leer sein.`);
-            return null;
-        }
-
-        // Parse to number
-        const parsed = Number.parseFloat(trimmed);
-
-        // Validate the parsed number
-        if (!Number.isFinite(parsed) || Number.isNaN(parsed)) {
-            setMessage(`❌ ${fieldName} muss eine gültige Zahl sein.`);
-            return null;
-        }
-
-        return parsed;
+    const validateAndParseNumber = (value: string | number, label: string): number | null => {
+        const num = typeof value === "number" ? value : parseFloat(value);
+        if (!Number.isFinite(num)) { setMessage(`❌ ${label} ist ungültig.`); return null; }
+        return num;
     };
 
-
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        if (!user?.userId) {
-            setMessage("❌ Keine Benutzer-ID vorhanden!");
-            return;
-        }
 
-        // Validate and parse numeric fields
         const montageAngle = validateAndParseNumber(formData.montageAngle, "Montagewinkel");
         if (montageAngle === null) return;
 
         const montageShadeFactor = validateAndParseNumber(formData.montageShadeFactor, "Verschattungsfaktor");
         if (montageShadeFactor === null) return;
 
-        // Build DTO only after successful validation
+        if (!DIRECTION_VALUES.includes(formData.montageDirection as Direction)) {
+            setMessage("❌ Ungültige Montagerichtung!");
+            return;
+        }
+
         const userConditions: UserConditionsDTO = {
             montagePlace: formData.montagePlace,
-            montageAngle: montageAngle,
-            montageDirection: formData.montageDirection as UserConditionsDTO["montageDirection"],
-            montageShadeFactor: montageShadeFactor,
+            montageAngle,
+            montageDirection: formData.montageDirection as Direction,
+            montageShadeFactor,
         };
 
         setIsLoading(true);
         try {
-            await axios.put<UserResponseDTO>(`/api/home/${user.userId}/conditions`, userConditions);
-            const resultResponse = await axios.post<UserResponseDTO>(`/api/home/${user.userId}/result`);
-
-            // Nur die User-Daten weitergeben, keine Nachricht
+            await axios.put(`/api/home/${user.userId}/conditions`, userConditions);
+            const resultResponse = await axios.post(`/api/home/${user.userId}/result`);
             navigate("/result", { state: { user: resultResponse.data } });
-
-        } catch (error: unknown) {
-            console.error("API Error:", error);
-
-            let errorMsg = "Fehler beim Speichern oder Berechnen.";
-            if (axios.isAxiosError(error) && error.response?.data) {
-                errorMsg = (error.response.data as { message?: string }).message || errorMsg;
-            }
-
-            setMessage(`❌ ${errorMsg}`);
+        } catch (error) {
+            console.error(error);
+            setMessage("❌ Fehler beim Speichern oder Berechnen.");
         } finally {
             setIsLoading(false);
         }
+    };
 
+    const handleBack = () => {
+        navigate("/userinfo", { state: { userId: user.userId, formData: user.userInfo } });
     };
 
     return (
         <div className="page">
-            <h2>Montageinformationen</h2>
+            {message && <p className="error">{message}</p>}
             <UserConditionsAsset
                 formData={formData}
                 onChange={handleChange}
                 onSubmit={handleSubmit}
-                onBack={() => navigate("/userinfo", { state: { userId: user.userId, formData: user.userInfo } })}
+                onBack={handleBack}
                 isLoading={isLoading}
             />
-            {message && (
-                <p className={message.startsWith("✅") ? "success" : "error"}>{message}</p>
-            )}
         </div>
     );
 }

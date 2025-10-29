@@ -1,6 +1,8 @@
-export interface UserConditions {
+import type { Direction } from "../dto/Direction.ts";
+
+export interface UserConditionsDTO {
     montagePlace: boolean;
     montageAngle: number;
-    montageDirection: string;
+    montageDirection: Direction;
     montageShadeFactor: number;
 }

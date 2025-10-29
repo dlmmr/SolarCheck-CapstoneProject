@@ -25,7 +25,7 @@ export default function HomeAsset({ message, onCreateUser }: HomeAssetProps) {
                     type="button"
                     aria-label="Berechnung starten"
                 >
-                    Los geht's
+                    Berechnung starten
                 </button>
 
                 {message && (
