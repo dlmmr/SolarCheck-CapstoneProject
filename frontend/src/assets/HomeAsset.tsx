@@ -29,14 +29,14 @@ export default function HomeAsset({ message, onCreateUser }: HomeAssetProps) {
                 </button>
 
                 {message && (
-                    <div
+                    <output
                         className={isSuccess ? styles.HomeSuccess : styles.HomeError}
-                        role={isSuccess ? "status" : "alert"}
                         aria-live="polite"
                     >
                         {message}
-                    </div>
+                    </output>
                 )}
+
             </div>
         </main>
     );

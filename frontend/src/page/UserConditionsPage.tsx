@@ -23,11 +23,23 @@ export default function UserConditionsPage() {
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
         const checked = 'checked' in e.target ? e.target.checked : undefined;
+
+        // Extrahiere die verschachtelte Ternary in eine Variable
+        let newValue: string | number | boolean | undefined;
+        if (type === "checkbox") {
+            newValue = checked;
+        } else if (type === "number") {
+            newValue = value === "" ? "" : Number(value);
+        } else {
+            newValue = value;
+        }
+
         setFormData(prev => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : type === "number" ? (value === "" ? "" : Number(value)) : value
+            [name]: newValue
         }));
     };
+
 
     const validateAndParseNumber = (value: string | number, fieldName: string): number | null => {
         // If already a number, validate it
@@ -45,16 +57,17 @@ export default function UserConditionsPage() {
         }
 
         // Parse to number
-        const parsed = parseFloat(trimmed);
+        const parsed = Number.parseFloat(trimmed);
 
         // Validate the parsed number
-        if (!Number.isFinite(parsed) || isNaN(parsed)) {
+        if (!Number.isFinite(parsed) || Number.isNaN(parsed)) {
             setMessage(`❌ ${fieldName} muss eine gültige Zahl sein.`);
             return null;
         }
 
         return parsed;
     };
+
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -82,14 +95,13 @@ export default function UserConditionsPage() {
         try {
             await axios.put<UserResponseDTO>(`/api/home/${user.userId}/conditions`, userConditions);
             const resultResponse = await axios.post<UserResponseDTO>(`/api/home/${user.userId}/result`);
-            setMessage("✅ Berechnung erfolgreich!");
-            setTimeout(() => {
-                navigate("/result", { state: { user: resultResponse.data } });
-                }, 300);
+
+            // Nur die User-Daten weitergeben, keine Nachricht
+            navigate("/result", { state: { user: resultResponse.data } });
+
         } catch (error: unknown) {
             console.error("API Error:", error);
 
-            // sichere Typprüfung
             let errorMsg = "Fehler beim Speichern oder Berechnen.";
             if (axios.isAxiosError(error) && error.response?.data) {
                 errorMsg = (error.response.data as { message?: string }).message || errorMsg;
@@ -99,6 +111,7 @@ export default function UserConditionsPage() {
         } finally {
             setIsLoading(false);
         }
+
     };
 
     return (

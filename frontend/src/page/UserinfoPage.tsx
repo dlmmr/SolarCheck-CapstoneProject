@@ -43,22 +43,17 @@ export default function UserinfoPage() {
         }
 
         // Parse to number
-        const parsed = parseFloat(trimmed);
+        const parsed = Number.parseFloat(trimmed);
 
         // Validate the parsed number
-        if (!Number.isFinite(parsed) || isNaN(parsed)) {
+        if (!Number.isFinite(parsed) || Number.isNaN(parsed)) {
             setMessage(`❌ ${fieldName} muss eine gültige Zahl sein.`);
-            return null;
-        }
-
-        // Optional: Check for negative values if they don't make sense for your use case
-        if (parsed < 0) {
-            setMessage(`❌ ${fieldName} kann nicht negativ sein.`);
             return null;
         }
 
         return parsed;
     };
+
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
