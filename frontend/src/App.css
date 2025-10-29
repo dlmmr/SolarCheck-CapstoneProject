@@ -62,8 +62,8 @@
     --font-size-2xl: 2rem;
     --font-size-3xl: 3rem;
 
-    /* Container Sizes */
-    --container-max-width: 520px;
+    /* Container Sizes - EINHEITLICH! */
+    --container-max-width: 680px;
     --container-min-height: 600px;
 }
 
@@ -94,6 +94,15 @@ html, body, #root {
 }
 
 /* ====================================
+   Page Wrapper
+   ==================================== */
+.page {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+}
+
+/* ====================================
    Typography
    ==================================== */
 h1, h2, h3, h4, h5, h6 {
@@ -108,11 +117,9 @@ h1 {
     font-size: var(--font-size-2xl);
     font-weight: 700;
     line-height: 1.2;
-    margin-bottom: var(--spacing-sm);
-    color: #ffffff; /* reines Weiß */
+    margin-bottom: var(--spacing-lg);
+    color: #ffffff;
 }
-
-
 
 h2 {
     font-size: 1.75rem;
@@ -124,29 +131,26 @@ p {
 }
 
 /* ====================================
-   Form Container (Shared)
+   Form Container (Shared) - EINHEITLICH
    ==================================== */
 .FormAndResultContainer {
-    padding: var(--spacing-4xl);
+    padding: var(--spacing-2xl);
     background-color: var(--bg-card);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
     max-width: var(--container-max-width);
     min-height: var(--container-min-height);
     width: 100%;
-    margin: var(--spacing-3xl) auto;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-lg);
     color: var(--text-primary);
-    text-align: center;
-    align-items: center;
 }
 
 .FormAndResultContent {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
     gap: var(--spacing-lg);
     width: 100%;
 }
@@ -226,6 +230,30 @@ input[type="checkbox"]:focus {
 }
 
 /* ====================================
+   Form Layout - Vertical Stack
+   ==================================== */
+.FormGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    width: 100%;
+}
+
+/* Grid für Conditions Page - 2 Spalten auf großen Bildschirmen */
+.FormGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .FormGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ====================================
    Buttons
    ==================================== */
 .FormAndResultButtonGroup {
@@ -234,7 +262,7 @@ input[type="checkbox"]:focus {
     justify-content: center;
     flex-wrap: wrap;
     width: 100%;
-    margin-top: var(--spacing-sm);
+    margin-top: var(--spacing-md);
 }
 
 .FormAndResultButton,
@@ -247,7 +275,7 @@ input[type="checkbox"]:focus {
     cursor: pointer;
     transition: all var(--transition-base);
     font-family: inherit;
-    min-width: 120px;
+    min-width: 140px;
 }
 
 .FormAndResultButton:focus,
@@ -293,16 +321,18 @@ input[type="checkbox"]:focus {
    Messages (Error/Success)
    ==================================== */
 .FormAndResultError,
-.FormAndResultSuccess {
+.FormAndResultSuccess,
+.error {
     font-size: var(--font-size-base);
-    margin-top: var(--spacing-md);
     text-align: center;
-    padding: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
     border-radius: var(--radius-sm);
     font-weight: 500;
+    margin: var(--spacing-sm) 0;
 }
 
-.FormAndResultError {
+.FormAndResultError,
+.error {
     color: var(--text-error);
     background-color: rgba(255, 114, 114, 0.1);
     border: 1px solid rgba(255, 114, 114, 0.3);
@@ -323,7 +353,7 @@ input[type="checkbox"]:focus {
     align-items: center;
     font-size: var(--font-size-base);
     width: 100%;
-    padding: 12px 0;
+    padding: var(--spacing-md) 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -343,17 +373,77 @@ input[type="checkbox"]:focus {
 }
 
 /* ====================================
+   PV Card Grid (UserConditions)
+   ==================================== */
+.PvCardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spacing-md);
+    width: 100%;
+    margin-bottom: var(--spacing-md);
+}
+
+.PvCard {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    text-align: center;
+    border: 2px solid var(--border-color);
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    min-height: 140px;
+}
+
+.PvCard:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.PvCardSelected {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(77, 141, 255, 0.2);
+    background-color: var(--bg-secondary);
+}
+
+.PvCardIcon {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-xs);
+}
+
+.PvCardTitle {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.PvCardDesc {
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* ====================================
    Responsive Design
    ==================================== */
 @media (max-width: 640px) {
     :root {
-        --spacing-4xl: 40px;
-        --font-size-3xl: 2rem;
+        --spacing-2xl: 24px;
+        --font-size-2xl: 1.5rem;
     }
 
     .FormAndResultContainer {
-        padding: var(--spacing-2xl);
-        margin: var(--spacing-lg) auto;
+        padding: var(--spacing-lg);
         min-height: auto;
     }
 
@@ -366,19 +456,32 @@ input[type="checkbox"]:focus {
     .FormAndResultButtonGroup {
         flex-direction: column;
     }
-}
 
-@media (max-width: 480px) {
-    .FormAndResultContainer {
-        padding: var(--spacing-lg);
+    .PvCardGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .FormGrid {
+        grid-template-columns: 1fr;
     }
 
     h1 {
         font-size: 1.5rem;
+        margin-bottom: var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .FormAndResultContainer {
+        padding: var(--spacing-md);
+    }
+
+    h1 {
+        font-size: 1.35rem;
     }
 
     h2 {
-        font-size: 1.35rem;
+        font-size: 1.25rem;
     }
 }
 

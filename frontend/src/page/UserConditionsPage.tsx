@@ -6,6 +6,7 @@ import type { UserResponseDTO } from "../dto/UserResponseDTO";
 import type { UserConditionsDTO } from "../dto/UserConditionsDTO";
 import type { Direction } from "../dto/Direction";
 import UserConditionsAsset, { type UserConditionsFormData } from "../assets/UserConditionsAsset";
+import type {UserPvConfig} from "../dto/UserPvConfig.ts";
 
 // ✅ Use Set for existence checks
 const DIRECTION_VALUES: Set<Direction> = new Set([
@@ -26,12 +27,12 @@ export default function UserConditionsPage() {
     const user = locationState?.user ?? null;
 
     const [formData, setFormData] = useState<UserConditionsFormData>({
-        montagePlace: locationState?.formData?.montagePlace ?? user?.userConditions?.montagePlace ?? false,
-        montageAngle: locationState?.formData?.montageAngle ?? user?.userConditions?.montageAngle ?? "",
-        // ✅ Remove unnecessary assertion
+        userPvConfig: locationState?.formData?.userPvConfig ?? user?.userConditions?.userPvConfig ?? "",
+        montageAngle: locationState?.formData?.montageAngle ?? user?.userConditions?.montageAngle ?? 0,
         montageDirection: locationState?.formData?.montageDirection ?? user?.userConditions?.montageDirection ?? "",
-        montageShadeFactor: locationState?.formData?.montageShadeFactor ?? user?.userConditions?.montageShadeFactor ?? "",
+        montageShadeFactor: locationState?.formData?.montageShadeFactor ?? user?.userConditions?.montageShadeFactor ?? 0,
     });
+
 
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -43,11 +44,14 @@ export default function UserConditionsPage() {
         const { name, value, type } = e.target;
         const checked = "checked" in e.target ? e.target.checked : undefined;
 
-        // ✅ Nested ternary extracted
         let newValue: string | number | boolean | undefined;
-        if (type === "checkbox") newValue = checked;
-        else if (type === "number") newValue = value === "" ? "" : Number(value);
-        else newValue = value;
+        if (type === "checkbox") {
+            newValue = checked;
+        } else if (type === "number") {
+            newValue = value === "" ? 0 : Number(value);
+        } else {
+            newValue = value;
+        }
 
         setFormData(prev => ({
             ...prev,
@@ -55,33 +59,26 @@ export default function UserConditionsPage() {
         }));
     };
 
-    const validateAndParseNumber = (value: string | number, label: string): number | null => {
-        // ✅ Use Number.parseFloat
-        const num = typeof value === "number" ? value : Number.parseFloat(value);
-        if (!Number.isFinite(num)) { setMessage(`❌ ${label} ist ungültig.`); return null; }
-        return num;
-    };
-
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        const montageAngle = validateAndParseNumber(formData.montageAngle, "Montagewinkel");
-        if (montageAngle === null) return;
+        // Validate PV config
+        if (!formData.userPvConfig) {
+            setMessage("❌ Bitte PV-Modul auswählen.");
+            return;
+        }
 
-        const montageShadeFactor = validateAndParseNumber(formData.montageShadeFactor, "Verschattungsfaktor");
-        if (montageShadeFactor === null) return;
-
-        // ✅ Use Set.has() instead of Array.includes()
+        // Validate direction
         if (!DIRECTION_VALUES.has(formData.montageDirection as Direction)) {
             setMessage("❌ Ungültige Montagerichtung!");
             return;
         }
 
         const userConditions: UserConditionsDTO = {
-            montagePlace: formData.montagePlace,
-            montageAngle,
+            userPvConfig: formData.userPvConfig as UserPvConfig,
+            montageAngle: formData.montageAngle,
             montageDirection: formData.montageDirection as Direction,
-            montageShadeFactor,
+            montageShadeFactor: formData.montageShadeFactor
         };
 
         setIsLoading(true);
@@ -91,13 +88,18 @@ export default function UserConditionsPage() {
             navigate("/result", { state: { user: resultResponse.data } });
         } catch (error) {
             console.error(error);
-            setMessage("❌ Fehler beim Speichern oder Berechnen.");
+            if (axios.isAxiosError(error) && error.response) {
+                setMessage(`❌ ${error.response.data.message || 'Fehler beim Speichern'}`);
+            } else {
+                setMessage("❌ Netzwerkfehler. Bitte erneut versuchen.");
+            }
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleBack = () => {
+        if (isLoading) return;  // ✅ Prevent navigation during submit
         navigate("/userinfo", { state: { userId: user.userId, formData: user.userInfo } });
     };
 

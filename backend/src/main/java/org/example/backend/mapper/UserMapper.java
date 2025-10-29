@@ -9,16 +9,26 @@ public class UserMapper {
 
     // DTO → Entities
     public UserInfo toUserInfo(UserInfoDTO dto) {
-        return new UserInfo(dto.userRateOfElectricity(),
+        if (dto == null) {
+            throw new IllegalArgumentException("UserInfoDTO darf nicht null sein");
+        }
+        return new UserInfo(
+                dto.userRateOfElectricity(),
                 dto.userHouseholdNumber(),
-                dto.userElectricityConsumption());
+                dto.userElectricityConsumption()
+        );
     }
 
     public UserConditions toUserConditions(UserConditionsDTO dto) {
-        return new UserConditions(dto.montagePlace(),
+        if (dto == null) {
+            throw new IllegalArgumentException("UserConditionsDTO darf nicht null sein");
+        }
+        return new UserConditions(
+                dto.userPvConfig(),
                 dto.montageAngle(),
                 dto.montageDirection(),
-                dto.montageShadeFactor());
+                dto.montageShadeFactor()
+        );
     }
 
     // Entities → DTO
@@ -32,14 +42,16 @@ public class UserMapper {
     }
 
     private UserInfoDTO toUserInfoDTO(UserInfo info) {
-        return new UserInfoDTO(info.userRateOfElectricity(),
+        return new UserInfoDTO(
+                info.userRateOfElectricity(),
                 info.userHouseholdNumber(),
-                info.userElectricityConsumption());
+                info.userElectricityConsumption()
+        );
     }
 
     private UserConditionsDTO toUserConditionsDTO(UserConditions conditions) {
         return new UserConditionsDTO(
-                conditions.montagePlace(),
+                conditions.userPvConfig(),
                 conditions.montageAngle(),
                 conditions.montageDirection(),
                 conditions.montageShadeFactor()
