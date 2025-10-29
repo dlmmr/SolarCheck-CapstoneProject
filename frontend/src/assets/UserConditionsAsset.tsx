@@ -57,7 +57,7 @@ export default function UserConditionsAsset({
         <form onSubmit={handleSubmit} className="FormAndResultContainer">
             <div className="FormAndResultContent">
                 <label className="FormAndResultLabel">
-                    Montage vorhanden
+                    Montage vorhanden{' '}
                     <input
                         id="montagePlace"
                         type="checkbox"
@@ -69,7 +69,7 @@ export default function UserConditionsAsset({
                 </label>
 
                 <label className="FormAndResultLabel">
-                    Montagewinkel (°)
+                    Montagewinkel (°){' '}
                     <input
                         id="montageAngle"
                         type="number"
@@ -85,7 +85,7 @@ export default function UserConditionsAsset({
                 </label>
 
                 <label className="FormAndResultLabel">
-                    Ausrichtung
+                    Ausrichtung{' '}
                     <select
                         id="montageDirection"
                         name="montageDirection"
@@ -103,7 +103,7 @@ export default function UserConditionsAsset({
                 </label>
 
                 <label className="FormAndResultLabel">
-                    Verschattung am Tag (0 = keine, 1 = komplett)
+                    Verschattung am Tag (0 = keine, 1 = komplett){' '}
                     <input
                         id="montageShadeFactor"
                         type="number"

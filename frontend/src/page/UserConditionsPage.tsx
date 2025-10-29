@@ -1,24 +1,35 @@
 import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 import type { UserResponseDTO } from "../dto/UserResponseDTO";
 import type { UserConditionsDTO } from "../dto/UserConditionsDTO";
 import type { Direction } from "../dto/Direction";
 import UserConditionsAsset, { type UserConditionsFormData } from "../assets/UserConditionsAsset";
 
-const DIRECTION_VALUES: Direction[] = ["NORTH","NORTHEAST","EAST","SOUTHEAST","SOUTH","SOUTHWEST","WEST","NORTHWEST"];
+// ✅ Use Set for existence checks
+const DIRECTION_VALUES: Set<Direction> = new Set([
+    "NORTH",
+    "NORTHEAST",
+    "EAST",
+    "SOUTHEAST",
+    "SOUTH",
+    "SOUTHWEST",
+    "WEST",
+    "NORTHWEST",
+]);
 
 export default function UserConditionsPage() {
     const location = useLocation();
     const navigate = useNavigate();
-
     const locationState = location.state as { user?: UserResponseDTO; formData?: UserConditionsDTO } | null;
     const user = locationState?.user ?? null;
 
     const [formData, setFormData] = useState<UserConditionsFormData>({
         montagePlace: locationState?.formData?.montagePlace ?? user?.userConditions?.montagePlace ?? false,
         montageAngle: locationState?.formData?.montageAngle ?? user?.userConditions?.montageAngle ?? "",
-        montageDirection: (locationState?.formData?.montageDirection ?? user?.userConditions?.montageDirection ?? "") as "" | Direction,
+        // ✅ Remove unnecessary assertion
+        montageDirection: locationState?.formData?.montageDirection ?? user?.userConditions?.montageDirection ?? "",
         montageShadeFactor: locationState?.formData?.montageShadeFactor ?? user?.userConditions?.montageShadeFactor ?? "",
     });
 
@@ -31,14 +42,22 @@ export default function UserConditionsPage() {
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         const checked = "checked" in e.target ? e.target.checked : undefined;
+
+        // ✅ Nested ternary extracted
+        let newValue: string | number | boolean | undefined;
+        if (type === "checkbox") newValue = checked;
+        else if (type === "number") newValue = value === "" ? "" : Number(value);
+        else newValue = value;
+
         setFormData(prev => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : type === "number" ? (value === "" ? "" : Number(value)) : value,
+            [name]: newValue,
         }));
     };
 
     const validateAndParseNumber = (value: string | number, label: string): number | null => {
-        const num = typeof value === "number" ? value : parseFloat(value);
+        // ✅ Use Number.parseFloat
+        const num = typeof value === "number" ? value : Number.parseFloat(value);
         if (!Number.isFinite(num)) { setMessage(`❌ ${label} ist ungültig.`); return null; }
         return num;
     };
@@ -52,7 +71,8 @@ export default function UserConditionsPage() {
         const montageShadeFactor = validateAndParseNumber(formData.montageShadeFactor, "Verschattungsfaktor");
         if (montageShadeFactor === null) return;
 
-        if (!DIRECTION_VALUES.includes(formData.montageDirection as Direction)) {
+        // ✅ Use Set.has() instead of Array.includes()
+        if (!DIRECTION_VALUES.has(formData.montageDirection as Direction)) {
             setMessage("❌ Ungültige Montagerichtung!");
             return;
         }
