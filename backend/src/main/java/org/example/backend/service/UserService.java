@@ -13,13 +13,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     // Constants
-    private static final double DEFAULT_POWER_KWP = 0.8;
     private static final int SOLAR_IRRADIANCE = 1000;
-    private static final int INSTALLATION_COST_EUR = 1000;
-
-    // Defaults for optional fields
-    private static final int DEFAULT_ANGLE = 30;        // Optimal angle in degrees
-    private static final double DEFAULT_SHADE_FACTOR = 0.0;  // No shade
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -80,45 +74,42 @@ public class UserService {
                 .orElseThrow(() -> new IllegalStateException(
                         "UserInfo fehlen für User mit ID " + userId + ". Bitte zuerst UserInfo setzen."));
 
+        // Hier holen wir das vom User gewählte PV-Modul
+        UserPvConfig pvConfig = conditions.userPvConfig();
+        if (pvConfig == null) {
+            throw new IllegalStateException("Kein PV-Modul gewählt für User mit ID " + userId);
+        }
+
+        double powerKwp = pvConfig.getDefaultPowerKwp();
+        int installationCost = pvConfig.getInstallationCostEur();
+
         // Calculate direction factor
         double directionFactor = getDirectionFactor(conditions.montageDirection());
 
-        // ✅ Handle nullable montageAngle - use default if null
-        int angle = conditions.montageAngle() != null
-                ? conditions.montageAngle()
-                : DEFAULT_ANGLE;
+        // Use values directly - @NotNull ensures they are never null
+        int angle = conditions.montageAngle();
         double angleFactor = getAngleFactor(angle);
 
-        // ✅ Handle nullable montageShadeFactor - use default if null
-        double shadeFactor = conditions.montageShadeFactor() != null
-                ? conditions.montageShadeFactor()
-                : DEFAULT_SHADE_FACTOR;
+        double shadeFactor = conditions.montageShadeFactor();
 
         // Calculate annual electricity generation in kWh
-        double yearlyYield = DEFAULT_POWER_KWP
+        double yearlyYield = powerKwp
                 * directionFactor
                 * angleFactor
-                * (1 - shadeFactor)  // 0.0 = no shade, 1.0 = complete shade
+                * (1 - shadeFactor)
                 * SOLAR_IRRADIANCE;
 
         int possibleElectricity = (int) Math.round(yearlyYield);
 
-        // ✅ FIXED: Use actual electricity rate from UserInfo
-        // Convert from cents to euros (e.g., 30 cents = 0.30 EUR)
         double pricePerKwh = info.userRateOfElectricity() / 100.0;
-
-        // Calculate annual savings in euros
         int savings = (int) Math.round(possibleElectricity * pricePerKwh);
 
-        // Calculate amortization time in years
         int amortisationTime = savings > 0
-                ? (int) Math.ceil((double) INSTALLATION_COST_EUR / savings)
-                : Integer.MAX_VALUE;  // Never pays back if no savings
+                ? (int) Math.ceil((double) installationCost / savings)
+                : Integer.MAX_VALUE;
 
-        // Create result
         UserResult result = new UserResult(possibleElectricity, savings, amortisationTime);
 
-        // Save updated user with result
         User updatedUser = new User(
                 user.userId(),
                 user.userInfo(),
