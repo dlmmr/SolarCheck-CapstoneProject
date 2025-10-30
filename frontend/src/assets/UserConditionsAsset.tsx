@@ -64,7 +64,8 @@ export default function UserConditionsAsset({
 
     return (
         <form onSubmit={handleSubmitLocal} className="FormAndResultContainer">
-            <div className="PvCardGrid">
+            <fieldset className="PvCardGrid">
+                <legend className="visually-hidden">PV-Modul auswählen</legend>
                 {PV_CARDS.map(card => (
                     <label key={card.key} className={`PvCard ${userPvConfig === card.key ? "PvCardSelected" : ""}`}>
                         <input
@@ -74,13 +75,14 @@ export default function UserConditionsAsset({
                             checked={userPvConfig === card.key}
                             onChange={onChange}
                             className="PvCardInput"
+                            aria-label={`${card.title}: ${card.desc}`}
                         />
                         <div className="PvCardIcon">{card.icon}</div>
                         <div className="PvCardTitle">{card.title}</div>
                         <div className="PvCardDesc">{card.desc}</div>
                     </label>
                 ))}
-            </div>
+            </fieldset>
 
             <div className="FormAndResultContent">
                 <div>

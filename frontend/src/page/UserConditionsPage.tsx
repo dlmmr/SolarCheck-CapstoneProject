@@ -63,7 +63,7 @@ export default function UserConditionsPage() {
 
         const parsed = Number.parseFloat(strValue);
 
-        if (!Number.isFinite(parsed) || Number.isNaN(parsed)) {
+        if (!Number.isFinite(parsed)) {
             setMessage(`❌ ${fieldName} muss eine gültige Zahl sein.`);
             return null;
         }
