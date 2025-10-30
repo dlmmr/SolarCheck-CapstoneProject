@@ -5,19 +5,13 @@ import axios from "axios";
 import type { UserResponseDTO } from "../dto/UserResponseDTO";
 import type { UserConditionsDTO } from "../dto/UserConditionsDTO";
 import type { Direction } from "../dto/Direction";
+import type { UserPvConfig } from "../dto/UserPvConfig";
 import UserConditionsAsset, { type UserConditionsFormData } from "../assets/UserConditionsAsset";
-import type {UserPvConfig} from "../dto/UserPvConfig.ts";
 
-// ✅ Use Set for existence checks
+// ✅ Set für Richtungsauswahl
 const DIRECTION_VALUES: Set<Direction> = new Set([
-    "NORTH",
-    "NORTHEAST",
-    "EAST",
-    "SOUTHEAST",
-    "SOUTH",
-    "SOUTHWEST",
-    "WEST",
-    "NORTHWEST",
+    "NORTH", "NORTHEAST", "EAST", "SOUTHEAST",
+    "SOUTH", "SOUTHWEST", "WEST", "NORTHWEST",
 ]);
 
 export default function UserConditionsPage() {
@@ -28,11 +22,10 @@ export default function UserConditionsPage() {
 
     const [formData, setFormData] = useState<UserConditionsFormData>({
         userPvConfig: locationState?.formData?.userPvConfig ?? user?.userConditions?.userPvConfig ?? "",
-        montageAngle: locationState?.formData?.montageAngle ?? user?.userConditions?.montageAngle ?? 0,
+        montageAngle: locationState?.formData?.montageAngle ?? user?.userConditions?.montageAngle ?? "",
         montageDirection: locationState?.formData?.montageDirection ?? user?.userConditions?.montageDirection ?? "",
-        montageShadeFactor: locationState?.formData?.montageShadeFactor ?? user?.userConditions?.montageShadeFactor ?? 0,
+        montageShadeFactor: locationState?.formData?.montageShadeFactor ?? user?.userConditions?.montageShadeFactor ?? "",
     });
-
 
     const [message, setMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -42,15 +35,10 @@ export default function UserConditionsPage() {
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
-        const checked = "checked" in e.target ? e.target.checked : undefined;
+        let newValue: string | number = value;
 
-        let newValue: string | number | boolean | undefined;
-        if (type === "checkbox") {
-            newValue = checked;
-        } else if (type === "number") {
-            newValue = value === "" ? 0 : Number(value);
-        } else {
-            newValue = value;
+        if (type === "number") {
+            newValue = value === "" ? "" : Number(value);
         }
 
         setFormData(prev => ({
@@ -59,26 +47,42 @@ export default function UserConditionsPage() {
         }));
     };
 
+    const validateAndParseNumber = (value: string | number, fieldName: string, min: number, max: number): number | null => {
+        if (value === "") {
+            setMessage(`❌ ${fieldName} darf nicht leer sein.`);
+            return null;
+        }
+        const parsed = Number(value);
+        if (isNaN(parsed) || parsed < min || parsed > max) {
+            setMessage(`❌ ${fieldName} muss zwischen ${min} und ${max} liegen.`);
+            return null;
+        }
+        return parsed;
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        // Validate PV config
         if (!formData.userPvConfig) {
             setMessage("❌ Bitte PV-Modul auswählen.");
             return;
         }
-
-        // Validate direction
         if (!DIRECTION_VALUES.has(formData.montageDirection as Direction)) {
             setMessage("❌ Ungültige Montagerichtung!");
             return;
         }
 
+        const montageAngle = validateAndParseNumber(formData.montageAngle, "Montagewinkel", 0, 90);
+        if (montageAngle === null) return;
+
+        const montageShadeFactor = validateAndParseNumber(formData.montageShadeFactor, "Verschattung", 0, 1);
+        if (montageShadeFactor === null) return;
+
         const userConditions: UserConditionsDTO = {
             userPvConfig: formData.userPvConfig as UserPvConfig,
-            montageAngle: formData.montageAngle,
+            montageAngle,
             montageDirection: formData.montageDirection as Direction,
-            montageShadeFactor: formData.montageShadeFactor
+            montageShadeFactor,
         };
 
         setIsLoading(true);
@@ -98,14 +102,13 @@ export default function UserConditionsPage() {
             } else {
                 setMessage("❌ Netzwerkfehler. Bitte erneut versuchen.");
             }
-
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleBack = () => {
-        if (isLoading) return;  // ✅ Prevent navigation during submit
+        if (isLoading) return;
         navigate("/userinfo", { state: { userId: user.userId, formData: user.userInfo } });
     };
 

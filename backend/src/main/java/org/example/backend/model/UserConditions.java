@@ -3,7 +3,7 @@ package org.example.backend.model;
 
 public record UserConditions(
         UserPvConfig userPvConfig,
-        Integer montageAngle,
+        int montageAngle,
         Direction montageDirection,
-        Double montageShadeFactor
+        double montageShadeFactor
 ) {}
