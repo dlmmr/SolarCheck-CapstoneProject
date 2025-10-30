@@ -1,17 +1,21 @@
 import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import type { UserResponseDTO } from "../dto/UserResponseDTO";
 import type { UserConditionsDTO } from "../dto/UserConditionsDTO";
 import type { Direction } from "../dto/Direction";
 import type { UserPvConfig } from "../dto/UserPvConfig";
 import UserConditionsAsset, { type UserConditionsFormData } from "../assets/UserConditionsAsset";
 
-// ✅ Set für Richtungsauswahl
 const DIRECTION_VALUES: Set<Direction> = new Set([
     "NORTH", "NORTHEAST", "EAST", "SOUTHEAST",
     "SOUTH", "SOUTHWEST", "WEST", "NORTHWEST",
+]);
+
+const PV_CONFIG_VALUES: Set<UserPvConfig> = new Set([
+    "CHEAP_PV_COMBI",
+    "MEDIUM_PV_COMBI",
+    "PREMIUM_PV_COMBI",
 ]);
 
 export default function UserConditionsPage() {
@@ -36,41 +40,72 @@ export default function UserConditionsPage() {
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value, type } = e.target;
         let newValue: string | number = value;
-
         if (type === "number") {
             newValue = value === "" ? "" : Number(value);
         }
 
-        setFormData(prev => ({
-            ...prev,
-            [name]: newValue,
-        }));
+        setFormData(prev => ({ ...prev, [name]: newValue }));
     };
 
-    const validateAndParseNumber = (value: string | number, fieldName: string, min: number, max: number): number | null => {
-        if (value === "") {
+    const validateAndParseNumber = (
+        value: string | number,
+        fieldName: string,
+        min: number,
+        max: number
+    ): number | null => {
+        // Konvertiere zu String für einheitliche Behandlung
+        const strValue = String(value).trim();
+
+        if (strValue === "") {
             setMessage(`❌ ${fieldName} darf nicht leer sein.`);
             return null;
         }
-        const parsed = Number(value);
-        if (isNaN(parsed) || parsed < min || parsed > max) {
+
+        const parsed = Number.parseFloat(strValue);
+
+        if (!Number.isFinite(parsed) || Number.isNaN(parsed)) {
+            setMessage(`❌ ${fieldName} muss eine gültige Zahl sein.`);
+            return null;
+        }
+
+        if (parsed < min || parsed > max) {
             setMessage(`❌ ${fieldName} muss zwischen ${min} und ${max} liegen.`);
             return null;
         }
+
         return parsed;
+    };
+
+    const validatePvConfig = (value: UserPvConfig | ""): value is UserPvConfig => {
+        if (value === "") {
+            setMessage("❌ Bitte PV-Modul auswählen.");
+            return false;
+        }
+        if (!PV_CONFIG_VALUES.has(value)) {
+            setMessage("❌ Ungültiges PV-Modul!");
+            return false;
+        }
+        return true;
+    };
+
+    const validateDirection = (value: Direction | ""): value is Direction => {
+        if (value === "") {
+            setMessage("❌ Bitte Montagerichtung auswählen.");
+            return false;
+        }
+        if (!DIRECTION_VALUES.has(value)) {
+            setMessage("❌ Ungültige Montagerichtung!");
+            return false;
+        }
+        return true;
     };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
-        if (!formData.userPvConfig) {
-            setMessage("❌ Bitte PV-Modul auswählen.");
-            return;
-        }
-        if (!DIRECTION_VALUES.has(formData.montageDirection as Direction)) {
-            setMessage("❌ Ungültige Montagerichtung!");
-            return;
-        }
+        // Validierung mit Type Guards
+        if (!validatePvConfig(formData.userPvConfig)) return;
+        if (!validateDirection(formData.montageDirection)) return;
 
         const montageAngle = validateAndParseNumber(formData.montageAngle, "Montagewinkel", 0, 90);
         if (montageAngle === null) return;
@@ -78,10 +113,11 @@ export default function UserConditionsPage() {
         const montageShadeFactor = validateAndParseNumber(formData.montageShadeFactor, "Verschattung", 0, 1);
         if (montageShadeFactor === null) return;
 
+        // Jetzt sind alle Werte validiert und haben die richtigen Typen
         const userConditions: UserConditionsDTO = {
-            userPvConfig: formData.userPvConfig as UserPvConfig,
+            userPvConfig: formData.userPvConfig,
             montageAngle,
-            montageDirection: formData.montageDirection as Direction,
+            montageDirection: formData.montageDirection,
             montageShadeFactor,
         };
 
@@ -89,19 +125,17 @@ export default function UserConditionsPage() {
         try {
             await axios.put(`/api/home/${user.userId}/conditions`, userConditions);
             const resultResponse = await axios.post(`/api/home/${user.userId}/result`);
+            setMessage("✅ Daten erfolgreich gespeichert!");
             navigate("/result", { state: { user: resultResponse.data } });
-        } catch (error) {
-            console.error(error);
-            if (axios.isAxiosError(error)) {
-                const responseData = error.response?.data;
-                const backendMessage =
-                    responseData && typeof responseData === "object"
-                        ? (responseData as { message?: string }).message
-                        : undefined;
-                setMessage(`❌ ${backendMessage ?? 'Fehler beim Speichern'}`);
-            } else {
-                setMessage("❌ Netzwerkfehler. Bitte erneut versuchen.");
+        } catch (error: unknown) {
+            console.error("API Error:", error);
+
+            let errorMsg = "Fehler beim Speichern der Daten.";
+            if (axios.isAxiosError(error) && error.response?.data) {
+                errorMsg = (error.response.data as { message?: string }).message || errorMsg;
             }
+
+            setMessage(`❌ ${errorMsg}`);
         } finally {
             setIsLoading(false);
         }
@@ -115,7 +149,6 @@ export default function UserConditionsPage() {
     return (
         <div className="page">
             <h1>Deine Angaben</h1>
-            {message && <p className="error">{message}</p>}
             <UserConditionsAsset
                 formData={formData}
                 onChange={handleChange}
@@ -123,6 +156,9 @@ export default function UserConditionsPage() {
                 onBack={handleBack}
                 isLoading={isLoading}
             />
+            {message && (
+                <p className={message.startsWith("✅") ? "success" : "error"}>{message}</p>
+            )}
         </div>
     );
 }

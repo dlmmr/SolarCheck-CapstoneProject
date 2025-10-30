@@ -4,10 +4,10 @@ import type { UserPvConfig } from "../dto/UserPvConfig";
 import "../app.css";
 
 export interface UserConditionsFormData {
-    userPvConfig: UserPvConfig | "";
-    montageAngle: number | "";
-    montageDirection: "" | Direction;
-    montageShadeFactor: number | "";
+    userPvConfig: UserPvConfig | "";       // erlaubt leer für UX
+    montageAngle: number | "";             // erlaubt leer für UX
+    montageDirection: Direction | "";      // erlaubt leer für UX
+    montageShadeFactor: number | "";       // erlaubt leer für UX
 }
 
 interface UserConditionsAssetProps {
@@ -47,13 +47,14 @@ export default function UserConditionsAsset({
 
     const valid = {
         config: userPvConfig !== "",
-        angle: montageAngle === "" || (montageAngle >= 0 && montageAngle <= 90),
+        angle: montageAngle !== "" && montageAngle >= 0 && montageAngle <= 90,
         direction: montageDirection !== "",
-        shade: montageShadeFactor === "" || (montageShadeFactor >= 0 && montageShadeFactor <= 1),
+        shade: montageShadeFactor !== "" && montageShadeFactor >= 0 && montageShadeFactor <= 1,
     };
 
     const isValid = Object.values(valid).every(Boolean);
-    const inputClass = (ok: boolean) => (!submitted || ok ? "FormAndResultInput" : "FormAndResultInput FormAndResultInputError");
+    const inputClass = (ok: boolean) =>
+        !submitted || ok ? "FormAndResultInput" : "FormAndResultInput FormAndResultInputError";
 
     const handleSubmitLocal = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -63,11 +64,17 @@ export default function UserConditionsAsset({
 
     return (
         <form onSubmit={handleSubmitLocal} className="FormAndResultContainer">
-            {/* PV Auswahl */}
             <div className="PvCardGrid">
                 {PV_CARDS.map(card => (
                     <label key={card.key} className={`PvCard ${userPvConfig === card.key ? "PvCardSelected" : ""}`}>
-                        <input type="radio" name="userPvConfig" value={card.key} checked={userPvConfig === card.key} onChange={onChange} className="PvCardInput" />
+                        <input
+                            type="radio"
+                            name="userPvConfig"
+                            value={card.key}
+                            checked={userPvConfig === card.key}
+                            onChange={onChange}
+                            className="PvCardInput"
+                        />
                         <div className="PvCardIcon">{card.icon}</div>
                         <div className="PvCardTitle">{card.title}</div>
                         <div className="PvCardDesc">{card.desc}</div>
@@ -75,15 +82,31 @@ export default function UserConditionsAsset({
                 ))}
             </div>
 
-            {/* Restliche Felder */}
             <div className="FormAndResultContent">
                 <div>
                     <label htmlFor="montageAngle">Montagewinkel (°)</label>
-                    <input id="montageAngle" type="number" name="montageAngle" value={montageAngle} onChange={onChange} min={0} max={90} step={5} placeholder="z.B. 30" className={inputClass(valid.angle)} />
+                    <input
+                        id="montageAngle"
+                        type="number"
+                        name="montageAngle"
+                        value={montageAngle}
+                        onChange={onChange}
+                        min={0}
+                        max={90}
+                        step={5}
+                        placeholder="z.B. 30"
+                        className={inputClass(valid.angle)}
+                    />
                 </div>
                 <div>
                     <label htmlFor="montageDirection">Ausrichtung</label>
-                    <select id="montageDirection" name="montageDirection" value={montageDirection} onChange={onChange} className={inputClass(valid.direction)}>
+                    <select
+                        id="montageDirection"
+                        name="montageDirection"
+                        value={montageDirection}
+                        onChange={onChange}
+                        className={inputClass(valid.direction)}
+                    >
                         <option value="">-- wählen --</option>
                         {Object.entries(DIRECTION_LABELS).map(([key, lbl]) => (
                             <option key={key} value={key}>{lbl}</option>
@@ -92,15 +115,32 @@ export default function UserConditionsAsset({
                 </div>
                 <div>
                     <label htmlFor="montageShadeFactor">Verschattung (0 = keine, 1 = komplett)</label>
-                    <input id="montageShadeFactor" type="number" name="montageShadeFactor" value={montageShadeFactor} onChange={onChange} min={0} max={1} step={0.1} placeholder="z.B. 0.0" className={inputClass(valid.shade)} />
+                    <input
+                        id="montageShadeFactor"
+                        type="number"
+                        name="montageShadeFactor"
+                        value={montageShadeFactor}
+                        onChange={onChange}
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        placeholder="z.B. 0.0"
+                        className={inputClass(valid.shade)}
+                    />
                 </div>
             </div>
 
-            {submitted && !isValid && <p className="FormAndResultError">🔴 Bitte alle Felder korrekt ausfüllen.</p>}
+            {submitted && !isValid && (
+                <p className="FormAndResultError">🔴 Bitte alle Felder korrekt ausfüllen.</p>
+            )}
 
             <div className="FormAndResultButtonGroup">
-                <button type="submit" className="FormAndResultButton" disabled={isLoading}>{isLoading ? "Speichern..." : "Weiter"}</button>
-                <button type="button" className="FormAndResultButtonBack" onClick={onBack} disabled={isLoading}>Zurück</button>
+                <button type="submit" className="FormAndResultButton" disabled={isLoading}>
+                    {isLoading ? "Speichern..." : "Weiter"}
+                </button>
+                <button type="button" className="FormAndResultButtonBack" onClick={onBack} disabled={isLoading}>
+                    Zurück
+                </button>
             </div>
         </form>
     );
