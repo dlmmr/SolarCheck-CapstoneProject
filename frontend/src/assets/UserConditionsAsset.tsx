@@ -97,7 +97,7 @@ export default function UserConditionsAsset({
                             checked={userPvConfig === card.key}
                             onChange={onChange}
                             aria-label={card.title}
-                            hidden
+                            className={"PvCardInput"}
                         />
                         <div className="PvCardIcon">{card.icon}</div>
                         <div className="PvCardTitle">{card.title}</div>

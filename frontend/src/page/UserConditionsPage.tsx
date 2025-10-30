@@ -88,11 +88,17 @@ export default function UserConditionsPage() {
             navigate("/result", { state: { user: resultResponse.data } });
         } catch (error) {
             console.error(error);
-            if (axios.isAxiosError(error) && error.response) {
-                setMessage(`❌ ${error.response.data.message || 'Fehler beim Speichern'}`);
+            if (axios.isAxiosError(error)) {
+                const responseData = error.response?.data;
+                const backendMessage =
+                    responseData && typeof responseData === "object"
+                        ? (responseData as { message?: string }).message
+                        : undefined;
+                setMessage(`❌ ${backendMessage ?? 'Fehler beim Speichern'}`);
             } else {
                 setMessage("❌ Netzwerkfehler. Bitte erneut versuchen.");
             }
+
         } finally {
             setIsLoading(false);
         }
