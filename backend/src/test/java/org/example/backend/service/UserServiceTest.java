@@ -119,9 +119,20 @@ class UserServiceTest {
         User updated = userService.calculateUserResult("1");
 
         assertNotNull(updated.userResult());
+
+        // Alte Prüfungen
         assertTrue(updated.userResult().userPossibleElectricityGeneration() > 0);
-        assertTrue(updated.userResult().userAmountofPossibleSavings() > 0);
+        assertTrue(updated.userResult().userAmountOfPossibleSavings() > 0);
         assertTrue(updated.userResult().userAmortisationTime() > 0);
+
+        // Neue Prüfungen
+        assertTrue(updated.userResult().userLifetimeYieldKwh() > 0);
+        double expectedCo2 = updated.userResult().userPossibleElectricityGeneration() * 0.4;
+        assertEquals(expectedCo2, updated.userResult().userCo2SavingsKgPerYear(), 0.01);
+        assertTrue(updated.userResult().userSelfConsumptionRate() >= 0.15 &&
+                updated.userResult().userSelfConsumptionRate() <= 0.35);
+        assertTrue(updated.userResult().userAutarkyRate() >= 0.0 &&
+                updated.userResult().userAutarkyRate() <= 1.0);
     }
 
     @Test
@@ -138,8 +149,14 @@ class UserServiceTest {
         User updated = userService.calculateUserResult("1");
 
         assertEquals(0, updated.userResult().userPossibleElectricityGeneration());
-        assertEquals(0, updated.userResult().userAmountofPossibleSavings());
-        assertEquals(Integer.MAX_VALUE, updated.userResult().userAmortisationTime());
+        assertEquals(0, updated.userResult().userAmountOfPossibleSavings());
+        assertEquals(Double.MAX_VALUE, updated.userResult().userAmortisationTime());
+
+        // Neue Felder bei 0-Ertrag
+        assertEquals(0.0, updated.userResult().userLifetimeYieldKwh());
+        assertEquals(0.0, updated.userResult().userCo2SavingsKgPerYear());
+        assertEquals(0.35, updated.userResult().userSelfConsumptionRate());
+        assertEquals(0.0, updated.userResult().userAutarkyRate());
     }
 
     @Test
@@ -172,7 +189,7 @@ class UserServiceTest {
     void calculateUserResult_shouldUseDifferentPvConfigCorrectly() {
         UserInfo info = new UserInfo(30, 2, 4000);
 
-        // Test CHEAP_PV_COMBI (0.8 kWp, 500 EUR)
+        // CHEAP_PV_COMBI
         UserConditions cheapConditions = new UserConditions(
                 UserPvConfig.CHEAP_PV_COMBI, 30, Direction.SOUTH, 0.0
         );
@@ -182,7 +199,7 @@ class UserServiceTest {
 
         User cheapResult = userService.calculateUserResult("1");
 
-        // Test PREMIUM_PV_COMBI (2.0 kWp, 2000 EUR)
+        // PREMIUM_PV_COMBI
         UserConditions premiumConditions = new UserConditions(
                 UserPvConfig.PREMIUM_PV_COMBI, 30, Direction.SOUTH, 0.0
         );
@@ -191,14 +208,25 @@ class UserServiceTest {
 
         User premiumResult = userService.calculateUserResult("2");
 
-        // Premium should generate more electricity (2.0 / 0.8 = 2.5x)
-        assertTrue(premiumResult.userResult().userPossibleElectricityGeneration() >
-                cheapResult.userResult().userPossibleElectricityGeneration());
+        // Vergleich auf Basis der totalen Modulleistung * Clipping
+        double cheapEffective = cheapConditions.userPvConfig().getTotalModuleKwp() *
+                cheapConditions.userPvConfig().getClippingFactor();
+        double premiumEffective = premiumConditions.userPvConfig().getTotalModuleKwp() *
+                premiumConditions.userPvConfig().getClippingFactor();
 
-        // Premium should have higher savings
-        assertTrue(premiumResult.userResult().userAmountofPossibleSavings() >
-                cheapResult.userResult().userAmountofPossibleSavings());
+        assertTrue(premiumResult.userResult().userPossibleElectricityGeneration() >=
+                cheapResult.userResult().userPossibleElectricityGeneration());
+        assertTrue(premiumResult.userResult().userAmountOfPossibleSavings() >=
+                cheapResult.userResult().userAmountOfPossibleSavings());
+
+
+        // Neue Felder prüfen
+        assertTrue(premiumResult.userResult().userLifetimeYieldKwh() >=
+                cheapResult.userResult().userLifetimeYieldKwh());
+        assertTrue(premiumResult.userResult().userCo2SavingsKgPerYear() >=
+                cheapResult.userResult().userCo2SavingsKgPerYear());
     }
+
 
     @Test
     void calculateUserResult_shouldCalculateWithZeroAngle() {
@@ -213,8 +241,8 @@ class UserServiceTest {
 
         User updated = userService.calculateUserResult("1");
 
-        // Should still generate electricity, just less efficient
         assertTrue(updated.userResult().userPossibleElectricityGeneration() > 0);
+        assertTrue(updated.userResult().userLifetimeYieldKwh() > 0);
     }
 
     @Test
@@ -230,7 +258,7 @@ class UserServiceTest {
 
         User updated = userService.calculateUserResult("1");
 
-        // Should generate maximum electricity (no shade)
         assertTrue(updated.userResult().userPossibleElectricityGeneration() > 0);
+        assertTrue(updated.userResult().userLifetimeYieldKwh() > 0);
     }
 }

@@ -554,3 +554,359 @@ input[type="checkbox"]:focus {
 .skip-to-main:focus {
     top: 0;
 }
+/* ====================================
+   Result Page - Dark Theme Compact
+   ==================================== */
+
+/* Result Page Wrapper */
+.ResultPageCompact {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    max-width: 1400px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.ResultPageTitleCompact {
+    font-size: var(--font-size-2xl);
+    color: var(--text-primary);
+    margin: 0 0 var(--spacing-lg) 0;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* Compact Container */
+.ResultContainerCompact {
+    flex: 1;
+    gap: var(--spacing-lg);
+    max-height: none;
+    overflow: visible;
+}
+
+
+/* Main Grid - 2x2 Layout */
+/* Standard: 1 Spalte für mobile Geräte */
+.ResultMainGrid {
+    display: grid;
+    grid-template-columns: 1fr; /* Standard: 1 Spalte */
+    gap: var(--spacing-lg);
+    align-items: start;
+}
+
+/* Ab 1024px: 3 Spalten für Desktop */
+@media (min-width: 1024px) {
+    .ResultMainGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+
+/* Compact Group */
+.ResultGroupCompact {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--spacing-md);
+    height: 100%;
+}
+
+.ResultGroupCompact:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.ResultGroupHeaderCompact {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid rgba(77, 141, 255, 0.2);
+}
+
+.ResultGroupIconCompact {
+    font-size: 1.75rem;
+    filter: drop-shadow(0 0 8px rgba(77, 141, 255, 0.3));
+}
+
+.ResultGroupTitleCompact {
+    font-size: var(--font-size-xl);
+    color: var(--text-primary);
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Compact Cards */
+/* ---- Gleich große Result-Cards, sauberes Grid ---- */
+.ResultCardsCompact {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* Spalten definieren */
+    gap: var(--spacing-md);
+    grid-auto-rows: 1fr;    /* jede Grid-Zeile gleiche Höhe */
+    align-items: stretch;   /* Karten in der Zeile strecken */
+}
+
+/* Parent-Gruppe sicherstellen, dass Karten Platz haben */
+.ResultGroupCompact {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: var(--spacing-md);
+    height: 100%;
+    align-items: start;
+}
+
+/* Card selbst dehnt sich auf volle Zeilenhöhe aus */
+.ResultCardCompact {
+    background: var(--bg-secondary);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--border-color);
+    transition: all var(--transition-base);
+
+    display: flex;              /* flex statt grid für einfaches Layout */
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;               /* sehr wichtig: Karte füllt die Grid-Zeilenhöhe */
+    box-sizing: border-box;
+    min-height: 0;              /* verhindert Overflow in flex children */
+}
+
+/* Optional: stabilere Subtitle-Höhe (falls nötig) */
+.ResultCardSubtitleCompact {
+    min-height: 2.1em; /* bereits vorhanden - beibehalten oder erhöhen */
+}
+
+/* Optional: wenn du mehrere Karten pro Gruppe hast und immer gleiche Anzahl Reihen willst,
+   kannst du die min-height oder grid-auto-rows anpassen */
+
+
+.ResultCardCompact:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+    background: var(--bg-input-focus);
+}
+
+/* Color variants - Dark Theme Compatible */
+.ResultCardCompact.ResultCard--economic {
+    border-left-color: #10b981;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(16, 185, 129, 0.05) 100%);
+}
+
+.ResultCardCompact.ResultCard--economic:hover {
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+}
+
+.ResultCardCompact.ResultCard--ecology {
+    border-left-color: #34d399;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(52, 211, 153, 0.05) 100%);
+}
+
+.ResultCardCompact.ResultCard--ecology:hover {
+    box-shadow: 0 4px 16px rgba(52, 211, 153, 0.2);
+}
+
+.ResultCardCompact.ResultCard--technical {
+    border-left-color: var(--color-primary);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(77, 141, 255, 0.05) 100%);
+}
+
+.ResultCardCompact.ResultCard--technical:hover {
+    box-shadow: 0 4px 16px rgba(77, 141, 255, 0.2);
+}
+
+.ResultCardCompact.ResultCard--autonomy {
+    border-left-color: #8b5cf6;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(139, 92, 246, 0.05) 100%);
+}
+
+.ResultCardCompact.ResultCard--autonomy:hover {
+    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
+}
+
+/* Card Header */
+.ResultCardHeaderCompact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-sm);
+}
+
+.ResultCardLabelCompact {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+.ResultCardTooltipCompact {
+    cursor: help;
+    font-size: 1rem;
+    opacity: 1;
+    transition: opacity var(--transition-base);
+    filter: grayscale(0);
+}
+
+.ResultCardTooltipCompact:hover {
+    opacity: 0.4;
+    filter: grayscale(0);
+}
+
+.ResultCardTooltipCompact:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.ResultCardValueCompact {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+    background: var(--gradient-text);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.ResultCardSubtitleCompact {
+    font-size: var(--font-size-sm);
+    color: var(--text-muted);
+    margin-top: var(--spacing-xs);
+    font-style: italic;
+    opacity: 0.8;
+    min-height: 2.1em;
+    display: block;
+}
+
+/* Progress Bar */
+.ResultCardProgressCompact {
+    margin-top: var(--spacing-md);
+    height: 8px;
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    min-height: calc(8px + var(--spacing-md));
+}
+
+.ResultCardProgressBarCompact {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    border-radius: var(--radius-sm);
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(77, 141, 255, 0.5);
+}
+
+/* Actions */
+.ResultActionsCompact {
+    display: flex;
+    justify-content: center;
+    padding-top: var(--spacing-lg);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .ResultMainGrid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    /* Result Page Wrapper */
+    .ResultPageCompact {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: var(--spacing-lg);
+        max-width: 1300px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .ResultPageTitleCompact {
+        font-size: var(--font-size-xl);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .ResultPageCompact {
+        padding: var(--spacing-md);
+    }
+
+    .ResultGroupCompact {
+        padding: var(--spacing-lg);
+    }
+
+    .ResultCardValueCompact {
+        font-size: 1.5rem;
+    }
+
+    .ResultMainGrid {
+        gap: var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .ResultGroupCompact {
+        padding: var(--spacing-md);
+    }
+
+    .ResultCardCompact {
+        padding: var(--spacing-md);
+    }
+
+    .ResultCardValueCompact {
+        font-size: 1.35rem;
+    }
+
+    .ResultGroupTitleCompact {
+        font-size: var(--font-size-base);
+    }
+}
+
+/* Accessibility - High Contrast Mode */
+@media (prefers-contrast: more) {
+    .ResultCardCompact {
+        border-width: 2px;
+    }
+
+    .ResultCardLabelCompact {
+        color: var(--text-secondary);
+    }
+
+    .ResultCardProgressBarCompact {
+        box-shadow: none;
+    }
+}
+
+/* Accessibility - Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .ResultGroupCompact,
+    .ResultCardCompact,
+    .ResultCardProgressBarCompact {
+        transition: none;
+    }
+
+    .ResultGroupCompact:hover,
+    .ResultCardCompact:hover {
+        transform: none;
+    }
+}
+
+/* Focus states for keyboard navigation */
+.ResultCardTooltipCompact:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    opacity: 1;
+}
+
+.ResultCardCompact.ResultCard--daily {
+    border-left-color: #f59e0b;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(245, 158, 11, 0.05) 100%);
+}
+
+.ResultCardCompact.ResultCard--daily:hover {
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+}

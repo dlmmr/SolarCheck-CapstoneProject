@@ -14,6 +14,15 @@ public class UserService {
 
     // Constants
     private static final int SOLAR_IRRADIANCE = 1000;
+    private static final int LIFETIME_YEARS = 25;
+    private static final double DEGRADATION_RATE = 0.005; // 0.5%/Jahr
+    private static final double CO2_PER_KWH = 0.4; // kg CO₂ pro kWh
+    private static final double BASE_SELF_CONSUMPTION = 0.30; // 30% ohne Speicher
+
+    // Zusätzliche Konstanten für Tagesberechnung
+    private static final double HOME_OFFICE_DAILY_KWH = 3.0;     // angenommener Verbrauch pro Tag im Homeoffice
+    private static final double EBIKE_KWH_PER_KM = 0.015;         // Verbrauch E-Bike
+    private static final double ECAR_KWH_PER_KM = 0.17;           // Verbrauch E-Auto
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -67,48 +76,88 @@ public class UserService {
 
         // Validate required data exists
         UserConditions conditions = Optional.ofNullable(user.userConditions())
-                .orElseThrow(() -> new IllegalStateException(
-                        "UserConditions fehlen für User mit ID " + userId + ". Bitte zuerst Bedingungen setzen."));
+                .orElseThrow(() -> new IllegalStateException("UserConditions fehlen."));
 
         UserInfo info = Optional.ofNullable(user.userInfo())
-                .orElseThrow(() -> new IllegalStateException(
-                        "UserInfo fehlen für User mit ID " + userId + ". Bitte zuerst UserInfo setzen."));
+                .orElseThrow(() -> new IllegalStateException("UserInfo fehlen."));
 
-        // Hier holen wir das vom User gewählte PV-Modul
         UserPvConfig pvConfig = conditions.userPvConfig();
         if (pvConfig == null) {
-            throw new IllegalStateException("Kein PV-Modul gewählt für User mit ID " + userId);
+            throw new IllegalStateException("Kein PV-Modul gewählt.");
         }
 
-        double powerKwp = pvConfig.getDefaultPowerKwp();
+        double powerKwp = pvConfig.getTotalModuleKwp();
         int installationCost = pvConfig.getInstallationCostEur();
 
-        // Calculate direction factor
         double directionFactor = getDirectionFactor(conditions.montageDirection());
-
-        // Use values directly - @NotNull ensures they are never null
-        int angle = conditions.montageAngle();
-        double angleFactor = getAngleFactor(angle);
-
+        double angleFactor = getAngleFactor(conditions.montageAngle());
         double shadeFactor = conditions.montageShadeFactor();
 
-        // Calculate annual electricity generation in kWh
+        // --- Jahresertrag ---
         double yearlyYield = powerKwp
                 * directionFactor
                 * angleFactor
                 * (1 - shadeFactor)
-                * SOLAR_IRRADIANCE;
+                * SOLAR_IRRADIANCE
+                * pvConfig.getClippingFactor();
 
         int possibleElectricity = (int) Math.round(yearlyYield);
 
         double pricePerKwh = info.userRateOfElectricity() / 100.0;
         int savings = (int) Math.round(possibleElectricity * pricePerKwh);
 
-        int amortisationTime = savings > 0
-                ? (int) Math.ceil((double) installationCost / savings)
-                : Integer.MAX_VALUE;
+        double amortisationTime = savings > 0
+                ? (double) installationCost / savings
+                : Double.MAX_VALUE;
 
-        UserResult result = new UserResult(possibleElectricity, savings, amortisationTime);
+        // --- Neue Berechnungen ---
+        // 1) Gesamtertrag über Systemlebensdauer (25 Jahre mit Degradation)
+        double lifetimeYield = 0.0;
+        double yearlyFactor = 1.0;
+        for (int y = 0; y < LIFETIME_YEARS; y++) {
+            lifetimeYield += yearlyYield * yearlyFactor;
+            yearlyFactor *= (1.0 - DEGRADATION_RATE);
+        }
+
+        // 2) CO₂-Ersparnis pro Jahr
+        double co2SavingsKgPerYear = possibleElectricity * CO2_PER_KWH;
+
+        // 3) Eigenverbrauchsquote (pauschal)
+        double annualConsumption = info.userElectricityConsumption();
+        double ratio = annualConsumption > 0 ? (possibleElectricity / annualConsumption) : 0.0;
+        double selfConsumptionRate;
+        if (ratio < 0.6) selfConsumptionRate = 0.35;
+        else if (ratio < 1.0) selfConsumptionRate = 0.25;
+        else if (ratio < 1.5) selfConsumptionRate = 0.20;
+        else selfConsumptionRate = 0.15;
+
+        // 4) Autarkiegrad
+        double autarkyRate = (annualConsumption <= 0)
+                ? 0.0
+                : Math.min(1.0, (selfConsumptionRate * possibleElectricity) / annualConsumption);
+
+        // --- Tageswerte ---
+        double dailyYield = roundToOneDecimal(yearlyYield / 365.0);
+        double dailySavings = roundToOneDecimal(dailyYield * pricePerKwh);
+        double homeofficeCoverageRate = roundToOneDecimal(calculateHomeofficeCoverageRate(dailyYield));
+        double dailyEBikeRangeKm = roundToOneDecimal(calculateDailyEBikeRangeKm(dailyYield));
+        double dailyECarRangeKm = roundToOneDecimal(calculateDailyECarRangeKm(dailyYield));
+
+        // --- Ergebnisobjekt ---
+        UserResult result = new UserResult(
+                possibleElectricity,
+                savings,
+                amortisationTime,
+                lifetimeYield,
+                co2SavingsKgPerYear,
+                selfConsumptionRate,
+                autarkyRate,
+                dailyYield,              // ✅ Variable bleibt gleich, nur Parameter-Name im Record ändert sich
+                dailySavings,            // ✅
+                homeofficeCoverageRate,  // ✅
+                dailyEBikeRangeKm,       // ✅
+                dailyECarRangeKm         // ✅
+        );
 
         User updatedUser = new User(
                 user.userId(),
@@ -120,7 +169,34 @@ public class UserService {
         return userRepository.save(updatedUser);
     }
 
-    // Helper methods
+    // ----------------------------------------------------
+    // 🔹 Neue Hilfsmethoden
+    // ----------------------------------------------------
+
+    private double calculateHomeofficeCoverageRate(double dailyYieldKwh) {
+        if (HOME_OFFICE_DAILY_KWH == 0) return 0;
+        double rate = dailyYieldKwh / HOME_OFFICE_DAILY_KWH;
+        return Math.min(rate, 1.0); // Max 100 %
+    }
+
+    private double calculateDailyEBikeRangeKm(double dailyYieldKwh) {
+        if (EBIKE_KWH_PER_KM == 0) return 0;
+        return dailyYieldKwh / EBIKE_KWH_PER_KM;
+    }
+
+    private double calculateDailyECarRangeKm(double dailyYieldKwh) {
+        if (ECAR_KWH_PER_KM == 0) return 0;
+        return dailyYieldKwh / ECAR_KWH_PER_KM;
+    }
+
+    private double roundToOneDecimal(double value) {
+        return Math.round(value * 10.0) / 10.0;
+    }
+
+    // ----------------------------------------------------
+    // 🔹 Bestehende Helper
+    // ----------------------------------------------------
+
     private double getDirectionFactor(Direction direction) {
         return switch (direction) {
             case SOUTH -> 1.0;
@@ -132,13 +208,10 @@ public class UserService {
     }
 
     private double getAngleFactor(int angle) {
-        // Clamp angle to valid range
         if (angle < 0) angle = 0;
         if (angle > 90) angle = 90;
-
-        // Optimal angle is 30°
         double diff = Math.abs(angle - 30);
-        double factor = 1.0 - diff * 0.01;  // 1% loss per degree deviation
-        return Math.max(factor, 0.6);       // Minimum 60% efficiency
+        double factor = 1.0 - diff * 0.01;
+        return Math.max(factor, 0.6);
     }
 }
