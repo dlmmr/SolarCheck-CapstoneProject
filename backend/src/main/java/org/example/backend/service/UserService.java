@@ -17,7 +17,6 @@ public class UserService {
     private static final int LIFETIME_YEARS = 25;
     private static final double DEGRADATION_RATE = 0.005; // 0.5%/Jahr
     private static final double CO2_PER_KWH = 0.4; // kg CO₂ pro kWh
-    private static final double BASE_SELF_CONSUMPTION = 0.30; // 30% ohne Speicher
 
     // Zusätzliche Konstanten für Tagesberechnung
     private static final double HOME_OFFICE_DAILY_KWH = 3.0;     // angenommener Verbrauch pro Tag im Homeoffice
@@ -152,11 +151,11 @@ public class UserService {
                 co2SavingsKgPerYear,
                 selfConsumptionRate,
                 autarkyRate,
-                dailyYield,              // ✅ Variable bleibt gleich, nur Parameter-Name im Record ändert sich
-                dailySavings,            // ✅
-                homeofficeCoverageRate,  // ✅
-                dailyEBikeRangeKm,       // ✅
-                dailyECarRangeKm         // ✅
+                dailyYield,
+                dailySavings,
+                homeofficeCoverageRate,
+                dailyEBikeRangeKm,
+                dailyECarRangeKm
         );
 
         User updatedUser = new User(
@@ -173,19 +172,21 @@ public class UserService {
     // 🔹 Neue Hilfsmethoden
     // ----------------------------------------------------
 
+
     private double calculateHomeofficeCoverageRate(double dailyYieldKwh) {
-        if (HOME_OFFICE_DAILY_KWH == 0) return 0;
-        double rate = dailyYieldKwh / HOME_OFFICE_DAILY_KWH;
-        return Math.min(rate, 1.0); // Max 100 %
+        // Anteil des Homeoffice-Verbrauchs, der durch PV gedeckt wird
+        return HOME_OFFICE_DAILY_KWH > 0
+                ? Math.min(100.0, (dailyYieldKwh / HOME_OFFICE_DAILY_KWH) * 100.0)
+                : 0.0;
     }
 
     private double calculateDailyEBikeRangeKm(double dailyYieldKwh) {
-        if (EBIKE_KWH_PER_KM == 0) return 0;
+        // Maximale km Reichweite E-Bike pro Tag basierend auf PV-Ertrag
         return dailyYieldKwh / EBIKE_KWH_PER_KM;
     }
 
     private double calculateDailyECarRangeKm(double dailyYieldKwh) {
-        if (ECAR_KWH_PER_KM == 0) return 0;
+        // Maximale km Reichweite E-Auto pro Tag basierend auf PV-Ertrag
         return dailyYieldKwh / ECAR_KWH_PER_KM;
     }
 

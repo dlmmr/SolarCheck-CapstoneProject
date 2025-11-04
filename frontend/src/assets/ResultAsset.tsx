@@ -1,9 +1,6 @@
 import type { UserResponseDTO } from "../dto/UserResponseDTO";
 import "../app.css";
 
-// CSS für die neue "daily" Kategorie wird automatisch durch
-// die existierenden Styles unterstützt
-
 interface Props {
     readonly user: UserResponseDTO | undefined;
     readonly goBack: () => void;
@@ -50,28 +47,33 @@ export default function ResultAsset({ user, goBack }: Props) {
     } = user.userResult;
 
     const renderCard = (result: ResultItem, color: string) => (
-        <div className={`ResultCardCompact ResultCard--${color}`}>
+        <div className={`ResultCardCompact ResultCard--${color}`} key={result.label}>
             <div className="ResultCardHeaderCompact">
                 <div className="ResultCardLabelCompact">{result.label}</div>
                 {result.tooltip && (
-                    <span className="ResultCardTooltipCompact" title={result.tooltip} role="tooltip" aria-label={result.tooltip}>
+                    <span
+                        className="ResultCardTooltipCompact"
+                        title={result.tooltip}
+                        role="tooltip"
+                        aria-label={result.tooltip}
+                    >
                         ℹ️
                     </span>
                 )}
             </div>
             <div className="ResultCardValueCompact">{result.value}</div>
-            {result.subtitle && <div className="ResultCardSubtitleCompact">{result.subtitle}</div>}
-            {!result.subtitle && <div className="ResultCardSubtitleCompact" style={{opacity: 0}}>Platzhalter</div>}
-            <div className="ResultCardProgressCompact" style={{visibility: result.showProgress ? 'visible' : 'hidden'}}>
-                <div
+            {result.subtitle ? (
+                <div className="ResultCardSubtitleCompact">{result.subtitle}</div>
+            ) : (
+                <div className="ResultCardSubtitleCompact" style={{ opacity: 0 }}>Platzhalter</div>
+            )}
+            {result.showProgress && result.progressValue !== undefined && (
+                <progress
                     className="ResultCardProgressBarCompact"
-                    style={{ width: result.showProgress && result.progressValue !== undefined ? `${Math.min(result.progressValue * 100, 100)}%` : '0%' }}
-                    role="progressbar"
-                    aria-valuenow={result.showProgress && result.progressValue !== undefined ? Math.round(result.progressValue * 100) : 0}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
+                    value={Math.min(result.progressValue * 100, 100)}
+                    max={100}
                 />
-            </div>
+            )}
         </div>
     );
 
@@ -87,11 +89,11 @@ export default function ResultAsset({ user, goBack }: Props) {
                         ? `${(userPossibleElectricityGeneration / 1000).toFixed(2)} MWh`
                         : `${userPossibleElectricityGeneration.toFixed(0)} kWh`,
                     tooltip: "Erwartete jährliche Produktion",
-                    subtitle: `≈ ${(userPossibleElectricityGeneration / 365).toFixed(1)} kWh/Tag`
+                    subtitle: `≈ ${(userPossibleElectricityGeneration / 365).toFixed(0)} kWh/Tag`
                 },
                 {
                     label: "Eigenverbrauch",
-                    value: `${(userSelfConsumptionRate * 100).toFixed(1)} %`,
+                    value: `${(userSelfConsumptionRate * 100).toFixed(0)} %`,
                     showProgress: true,
                     progressValue: userSelfConsumptionRate,
                     tooltip: "Anteil selbst verbrauchter Solarstrom",
@@ -101,7 +103,7 @@ export default function ResultAsset({ user, goBack }: Props) {
                 },
                 {
                     label: "Autarkiegrad",
-                    value: `${(userAutarkyRate * 100).toFixed(1)} %`,
+                    value: `${(userAutarkyRate * 100).toFixed(0)} %`,
                     showProgress: true,
                     progressValue: userAutarkyRate,
                     tooltip: "Anteil Solar am Strombedarf",
@@ -124,17 +126,17 @@ export default function ResultAsset({ user, goBack }: Props) {
                 },
                 {
                     label: "Homeoffice-Abdeckung",
-                    value: `${(userHomeofficeCoverageRate * 100).toFixed(1)} %`,
+                    value: `${(userHomeofficeCoverageRate * 100).toFixed(0)} %`,
                     showProgress: true,
                     progressValue: userHomeofficeCoverageRate,
                     tooltip: "Anteil des Homeoffice-Bedarfs (≈3 kWh/Tag), der durch PV gedeckt werden kann",
                     subtitle: userHomeofficeCoverageRate >= 1.0
                         ? "✓ Vollständig gedeckt"
-                        : `${(3 * userHomeofficeCoverageRate).toFixed(1)} von 3 kWh`
+                        : `${(3 * userHomeofficeCoverageRate).toFixed(0)} von 3 kWh`
                 },
                 {
                     label: "E-Bike Reichweite/Tag",
-                    value: `${userDailyEBikeRangeKm.toFixed(1)} km`,
+                    value: `${userDailyEBikeRangeKm.toFixed(0)} km`,
                     tooltip: "Tägliche E-Bike-Reichweite bei 15 Wh/km Verbrauch",
                     subtitle: userDailyEBikeRangeKm >= 50
                         ? "✓ Mehr als genug für Pendler"
@@ -142,7 +144,7 @@ export default function ResultAsset({ user, goBack }: Props) {
                 },
                 {
                     label: "E-Auto Reichweite/Tag",
-                    value: `${userDailyECarRangeKm.toFixed(1)} km`,
+                    value: `${userDailyECarRangeKm.toFixed(0)} km`,
                     tooltip: "Tägliche E-Auto-Reichweite bei 17 kWh/100km Verbrauch",
                     subtitle: userDailyECarRangeKm >= 40
                         ? "✓ Gut für tägliche Fahrten"
@@ -163,7 +165,7 @@ export default function ResultAsset({ user, goBack }: Props) {
                 },
                 {
                     label: "Amortisationsdauer",
-                    value: `${userAmortisationTime.toFixed(1)} Jahre`,
+                    value: `${userAmortisationTime.toFixed(0)} Jahre`,
                     tooltip: "Zeit bis zur Amortisation",
                     subtitle: userAmortisationTime <= 10
                         ? "✓ Schnelle Refinanzierung"
@@ -175,27 +177,20 @@ export default function ResultAsset({ user, goBack }: Props) {
 
     return (
         <div className="ResultContainerCompact">
-
             {/* Cards Grid - Max 4 Reihen */}
             <div className="ResultMainGrid">
-                {/* Alle Karten in einem Grid, die sich automatisch anpassen */}
-                {resultGroups.map((group, groupIndex) => (
-                    <div key={groupIndex} className="ResultGroupCompact">
+                {resultGroups.map(group => (
+                    <div key={group.title} className="ResultGroupCompact">
                         <div className="ResultGroupHeaderCompact">
                             <span className="ResultGroupIconCompact">{group.icon}</span>
                             <h3 className="ResultGroupTitleCompact">{group.title}</h3>
                         </div>
                         <div className="ResultCardsCompact">
-                            {group.results.map((result, resultIndex) => (
-                                <div key={resultIndex}>
-                                    {renderCard(result, group.color)}
-                                </div>
-                            ))}
+                            {group.results.map(result => renderCard(result, group.color))}
                         </div>
                     </div>
                 ))}
             </div>
-
 
             <div className="ResultActionsCompact">
                 <button className="FormAndResultButton" onClick={goBack}>

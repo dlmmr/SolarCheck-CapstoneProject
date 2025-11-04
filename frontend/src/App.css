@@ -145,6 +145,22 @@ p {
     border: 0;
 }
 
+/* Skip to main content link */
+.skip-to-main {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--color-primary);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100;
+}
+
+.skip-to-main:focus {
+    top: 0;
+}
+
 /* ====================================
    Form Container (Shared) - EINHEITLICH
    ==================================== */
@@ -469,92 +485,6 @@ input[type="checkbox"]:focus {
 }
 
 /* ====================================
-   Responsive Design
-   ==================================== */
-@media (max-width: 640px) {
-    :root {
-        --spacing-2xl: 24px;
-        --font-size-2xl: 1.5rem;
-    }
-
-    .FormAndResultContainer {
-        padding: var(--spacing-lg);
-        min-height: auto;
-    }
-
-    .FormAndResultButton,
-    .FormAndResultButtonBack {
-        width: 100%;
-        min-width: auto;
-    }
-
-    .FormAndResultButtonGroup {
-        flex-direction: column;
-    }
-
-    .PvCardGrid {
-        grid-template-columns: 1fr;
-    }
-
-    .FormGrid {
-        grid-template-columns: 1fr;
-    }
-
-    h1 {
-        font-size: 1.5rem;
-        margin-bottom: var(--spacing-md);
-    }
-}
-
-@media (max-width: 480px) {
-    .FormAndResultContainer {
-        padding: var(--spacing-md);
-    }
-
-    h1 {
-        font-size: 1.35rem;
-    }
-
-    h2 {
-        font-size: 1.25rem;
-    }
-}
-
-/* ====================================
-   Accessibility Improvements
-   ==================================== */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
-
-/* Focus visible for keyboard navigation */
-:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-}
-
-/* Skip to main content link (for screen readers) */
-.skip-to-main {
-    position: absolute;
-    top: -40px;
-    left: 0;
-    background: var(--color-primary);
-    color: white;
-    padding: 8px;
-    text-decoration: none;
-    z-index: 100;
-}
-
-.skip-to-main:focus {
-    top: 0;
-}
-/* ====================================
    Result Page - Dark Theme Compact
    ==================================== */
 
@@ -585,30 +515,27 @@ input[type="checkbox"]:focus {
     overflow: visible;
 }
 
-
 /* Main Grid - 2x2 Layout */
-/* Standard: 1 Spalte für mobile Geräte */
 .ResultMainGrid {
     display: grid;
-    grid-template-columns: 1fr; /* Standard: 1 Spalte */
+    grid-template-columns: 1fr;
     gap: var(--spacing-lg);
     align-items: start;
 }
 
-/* Ab 1024px: 3 Spalten für Desktop */
 @media (min-width: 1024px) {
     .ResultMainGrid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-
-/* Compact Group */
+/* Compact Group - KONSOLIDIERT */
 .ResultGroupCompact {
     display: grid;
     grid-template-rows: auto 1fr;
     gap: var(--spacing-md);
     height: 100%;
+    align-items: start;
 }
 
 .ResultGroupCompact:hover {
@@ -637,23 +564,13 @@ input[type="checkbox"]:focus {
     font-weight: 600;
 }
 
-/* Compact Cards */
-/* ---- Gleich große Result-Cards, sauberes Grid ---- */
+/* Compact Cards - Gleich große Result-Cards */
 .ResultCardsCompact {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); /* Spalten definieren */
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: var(--spacing-md);
-    grid-auto-rows: 1fr;    /* jede Grid-Zeile gleiche Höhe */
-    align-items: stretch;   /* Karten in der Zeile strecken */
-}
-
-/* Parent-Gruppe sicherstellen, dass Karten Platz haben */
-.ResultGroupCompact {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    gap: var(--spacing-md);
-    height: 100%;
-    align-items: start;
+    grid-auto-rows: 1fr;
+    align-items: stretch;
 }
 
 /* Card selbst dehnt sich auf volle Zeilenhöhe aus */
@@ -664,23 +581,13 @@ input[type="checkbox"]:focus {
     box-shadow: var(--shadow-sm);
     border-left: 4px solid var(--border-color);
     transition: all var(--transition-base);
-
-    display: flex;              /* flex statt grid für einfaches Layout */
+    display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%;               /* sehr wichtig: Karte füllt die Grid-Zeilenhöhe */
+    height: 100%;
     box-sizing: border-box;
-    min-height: 0;              /* verhindert Overflow in flex children */
+    min-height: 0;
 }
-
-/* Optional: stabilere Subtitle-Höhe (falls nötig) */
-.ResultCardSubtitleCompact {
-    min-height: 2.1em; /* bereits vorhanden - beibehalten oder erhöhen */
-}
-
-/* Optional: wenn du mehrere Karten pro Gruppe hast und immer gleiche Anzahl Reihen willst,
-   kannst du die min-height oder grid-auto-rows anpassen */
-
 
 .ResultCardCompact:hover {
     transform: translateX(4px);
@@ -725,6 +632,15 @@ input[type="checkbox"]:focus {
     box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
 }
 
+.ResultCardCompact.ResultCard--daily {
+    border-left-color: #f59e0b;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(245, 158, 11, 0.05) 100%);
+}
+
+.ResultCardCompact.ResultCard--daily:hover {
+    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+}
+
 /* Card Header */
 .ResultCardHeaderCompact {
     display: flex;
@@ -759,6 +675,12 @@ input[type="checkbox"]:focus {
     border-radius: 4px;
 }
 
+.ResultCardTooltipCompact:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    opacity: 1;
+}
+
 .ResultCardValueCompact {
     font-size: 2rem;
     font-weight: 700;
@@ -770,6 +692,7 @@ input[type="checkbox"]:focus {
     background-clip: text;
 }
 
+/* KONSOLIDIERT - ResultCardSubtitleCompact */
 .ResultCardSubtitleCompact {
     font-size: var(--font-size-sm);
     color: var(--text-muted);
@@ -806,14 +729,15 @@ input[type="checkbox"]:focus {
     padding-top: var(--spacing-lg);
 }
 
-/* Responsive */
+/* ====================================
+   Responsive Design
+   ==================================== */
 @media (max-width: 1024px) {
     .ResultMainGrid {
         grid-template-columns: 1fr;
         gap: var(--spacing-lg);
     }
 
-    /* Result Page Wrapper */
     .ResultPageCompact {
         min-height: 100vh;
         display: flex;
@@ -848,7 +772,46 @@ input[type="checkbox"]:focus {
     }
 }
 
+@media (max-width: 640px) {
+    :root {
+        --spacing-2xl: 24px;
+        --font-size-2xl: 1.5rem;
+    }
+
+    .FormAndResultContainer {
+        padding: var(--spacing-lg);
+        min-height: auto;
+    }
+
+    .FormAndResultButton,
+    .FormAndResultButtonBack {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .FormAndResultButtonGroup {
+        flex-direction: column;
+    }
+
+    .PvCardGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .FormGrid {
+        grid-template-columns: 1fr;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: var(--spacing-md);
+    }
+}
+
 @media (max-width: 480px) {
+    .FormAndResultContainer {
+        padding: var(--spacing-md);
+    }
+
     .ResultGroupCompact {
         padding: var(--spacing-md);
     }
@@ -864,6 +827,44 @@ input[type="checkbox"]:focus {
     .ResultGroupTitleCompact {
         font-size: var(--font-size-base);
     }
+
+    h1 {
+        font-size: 1.35rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+}
+
+/* ====================================
+   Accessibility Improvements
+   ==================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .ResultGroupCompact,
+    .ResultCardCompact,
+    .ResultCardProgressBarCompact {
+        transition: none;
+    }
+
+    .ResultGroupCompact:hover,
+    .ResultCardCompact:hover {
+        transform: none;
+    }
+}
+
+/* Focus visible for keyboard navigation */
+:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 /* Accessibility - High Contrast Mode */
@@ -879,34 +880,4 @@ input[type="checkbox"]:focus {
     .ResultCardProgressBarCompact {
         box-shadow: none;
     }
-}
-
-/* Accessibility - Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-    .ResultGroupCompact,
-    .ResultCardCompact,
-    .ResultCardProgressBarCompact {
-        transition: none;
-    }
-
-    .ResultGroupCompact:hover,
-    .ResultCardCompact:hover {
-        transform: none;
-    }
-}
-
-/* Focus states for keyboard navigation */
-.ResultCardTooltipCompact:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 2px;
-    opacity: 1;
-}
-
-.ResultCardCompact.ResultCard--daily {
-    border-left-color: #f59e0b;
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(245, 158, 11, 0.05) 100%);
-}
-
-.ResultCardCompact.ResultCard--daily:hover {
-    box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
 }
