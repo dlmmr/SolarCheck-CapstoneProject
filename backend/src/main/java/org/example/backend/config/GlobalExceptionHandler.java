@@ -17,6 +17,9 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    /** Gemeinsamer Schlüsselname für Fehlermeldungen */
+    private static final String ERROR_KEY = "error";
+
     /**
      * Behandelt Validierungsfehler von @Valid Annotationen.
      * Loggt als DEBUG, da diese Fehler durch Benutzereingaben verursacht werden
@@ -29,7 +32,7 @@ public class GlobalExceptionHandler {
         }
 
         Map<String, Object> response = new HashMap<>();
-        response.put("error", "Validation failed");
+        response.put(ERROR_KEY, "Validation failed");
 
         Map<String, String> fieldErrors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
@@ -54,7 +57,7 @@ public class GlobalExceptionHandler {
         logger.warn("Business logic error: {}", ex.getMessage());
 
         Map<String, String> response = new HashMap<>();
-        response.put("error", ex.getMessage());
+        response.put(ERROR_KEY, ex.getMessage());
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -70,7 +73,7 @@ public class GlobalExceptionHandler {
         logger.warn("Invalid argument: {}", ex.getMessage());
 
         Map<String, String> response = new HashMap<>();
-        response.put("error", ex.getMessage());
+        response.put(ERROR_KEY, ex.getMessage());
 
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
@@ -86,7 +89,7 @@ public class GlobalExceptionHandler {
         logger.error("Unexpected error occurred", ex);
 
         Map<String, String> response = new HashMap<>();
-        response.put("error", "Ein unerwarteter Fehler ist aufgetreten");
+        response.put(ERROR_KEY, "Ein unerwarteter Fehler ist aufgetreten");
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -22,7 +22,6 @@ class UserServiceTest {
     private UserService userService;
 
     // Konstanten für Tests (synchron mit UserService)
-    private static final double DEGRADATION_RATE = 0.005;
     private static final double CO2_PER_KWH = 0.4;
     private static final int LIFETIME_YEARS = 25;
     private static final double HOME_OFFICE_DAILY_KWH = 3.0;
