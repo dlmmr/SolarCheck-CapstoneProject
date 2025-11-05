@@ -1,4 +1,4 @@
-import type { UserResponseDTO } from "../dto/UserResponseDTO";
+import type {UserResponseDTO} from "../dto/UserResponseDTO";
 import "../app.css";
 
 interface Props {
@@ -23,7 +23,7 @@ interface ResultGroup {
     results: ResultItem[];
 }
 
-export default function ResultAsset({ user, goBack }: Props) {
+export default function ResultAsset({user, goBack}: Props) {
     if (!user?.userResult) {
         return (
             <div className="FormAndResultContainer">
@@ -54,18 +54,16 @@ export default function ResultAsset({ user, goBack }: Props) {
                     <span
                         className="ResultCardTooltipCompact"
                         title={result.tooltip}
-                        role="tooltip"
-                        aria-label={result.tooltip}
                     >
-                        ℹ️
-                    </span>
+        ℹ️
+    </span>
                 )}
             </div>
             <div className="ResultCardValueCompact">{result.value}</div>
             {result.subtitle ? (
                 <div className="ResultCardSubtitleCompact">{result.subtitle}</div>
             ) : (
-                <div className="ResultCardSubtitleCompact" style={{ opacity: 0 }}>Platzhalter</div>
+                <div className="ResultCardSubtitleCompact" style={{opacity: 0}} aria-hidden="true">Platzhalter</div>
             )}
             {result.showProgress && result.progressValue !== undefined && (
                 <progress
@@ -126,13 +124,13 @@ export default function ResultAsset({ user, goBack }: Props) {
                 },
                 {
                     label: "Homeoffice-Abdeckung",
-                    value: `${(userHomeofficeCoverageRate * 100).toFixed(0)} %`,
+                    value: `${userHomeofficeCoverageRate.toFixed(0)} %`,  // ✅ Direkt anzeigen: 80 → 80%
                     showProgress: true,
-                    progressValue: userHomeofficeCoverageRate,
+                    progressValue: userHomeofficeCoverageRate / 100,  // ✅ Für Progress Bar: 80 → 0.8
                     tooltip: "Anteil des Homeoffice-Bedarfs (≈3 kWh/Tag), der durch PV gedeckt werden kann",
-                    subtitle: userHomeofficeCoverageRate >= 1.0
+                    subtitle: userHomeofficeCoverageRate >= 100
                         ? "✓ Vollständig gedeckt"
-                        : `${(3 * userHomeofficeCoverageRate).toFixed(0)} von 3 kWh`
+                        : `${(3 * userHomeofficeCoverageRate / 100).toFixed(1)} von 3 kWh`  // ✅ Korrekt umrechnen
                 },
                 {
                     label: "E-Bike Reichweite/Tag",

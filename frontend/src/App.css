@@ -518,8 +518,9 @@ input[type="checkbox"]:focus {
 /* Main Grid - 2x2 Layout */
 .ResultMainGrid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr minmax(340px, 400px) 1fr; /* mittlere Spalte dominant */
     gap: var(--spacing-lg);
+    justify-content: center;
     align-items: start;
 }
 
@@ -584,9 +585,9 @@ input[type="checkbox"]:focus {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%;
+    width: 100%; /* Volle Breite nutzen */
+    height: 160px; /* Fixe Höhe für alle Cards */
     box-sizing: border-box;
-    min-height: 0;
 }
 
 .ResultCardCompact:hover {
@@ -880,4 +881,8 @@ input[type="checkbox"]:focus {
     .ResultCardProgressBarCompact {
         box-shadow: none;
     }
+}
+.ResultButton {
+    grid-column: 2;
+    justify-self: center;
 }
