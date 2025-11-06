@@ -4,6 +4,7 @@ import org.example.backend.dto.*;
 import org.example.backend.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -124,13 +125,43 @@ class UserMapperTest {
     // ---------- Round ----------
 
     @Test
-    void round_ShouldRoundToOneDecimal() {
-        double result = invokeRound(12.345);
-        assertEquals(12.3, result);
-    }
+    void toUserResponseDTO_ShouldRoundAllResultValuesToOneDecimal() {
+        // Given - UserResult mit "krummen" Zahlen
+        UserResult result = new UserResult(
+                1234,       // possibleElectricityGeneration (int)
+                567,        // amountOfPossibleSavings (int)
+                12.3456,    // amortisationTime
+                25000.789,  // lifetimeYieldKwh
+                1500.666,   // co2SavingsKgPerYear
+                45.555,     // selfConsumptionRate
+                38.444,     // autarkyRate
+                12.3456,    // dailyYield
+                3.4567,     // dailySavings
+                85.6789,    // homeofficeCoverageRate
+                45.6789,    // dailyEBikeRangeKm
+                180.9876    // dailyECarRangeKm
+        );
 
-    // Zugriff auf private Methode via Reflection (optional)
-    private double invokeRound(double value) {
-        return Math.round(value * 10.0) / 10.0;
+        User user = new User("test-user-id", null, null, result);
+
+        // When - Rufe die öffentliche Methode auf
+        UserResponseDTO responseDTO = mapper.toUserResponseDTO(user);
+        UserResultDTO dto = responseDTO.userResult();
+
+        // Then - Alle Werte sollten auf 1 Dezimalstelle gerundet sein
+        assertThat(dto.userAmortisationTime()).isEqualTo(12.3);
+        assertThat(dto.userLifetimeYieldKwh()).isEqualTo(25000.8);
+        assertThat(dto.userCo2SavingsKgPerYear()).isEqualTo(1500.7);
+        assertThat(dto.userSelfConsumptionRate()).isEqualTo(45.6);
+        assertThat(dto.userAutarkyRate()).isEqualTo(38.4);
+        assertThat(dto.userDailyYield()).isEqualTo(12.3);
+        assertThat(dto.userDailySavings()).isEqualTo(3.5);
+        assertThat(dto.userHomeofficeCoverageRate()).isEqualTo(85.7);
+        assertThat(dto.userDailyEBikeRangeKm()).isEqualTo(45.7);
+        assertThat(dto.userDailyECarRangeKm()).isEqualTo(181.0);
+
+        // Bonus: Die ersten beiden Werte werden NICHT gerundet (sind int)
+        assertThat(dto.userPossibleElectricityGeneration()).isEqualTo(1234);
+        assertThat(dto.userAmountOfPossibleSavings()).isEqualTo(567);
     }
 }
