@@ -574,7 +574,6 @@ input[type="checkbox"]:focus {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: var(--spacing-md);
-    /*grid-auto-rows: 1fr;*/
     align-items: stretch;
 }
 
