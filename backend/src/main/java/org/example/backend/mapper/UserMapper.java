@@ -31,6 +31,26 @@ public class UserMapper {
         );
     }
 
+    public UserResult toUserResult(UserResultDTO dto) {
+        if (dto == null) {
+            throw new IllegalArgumentException("UserResultDTO darf nicht null sein");
+        }
+        return new UserResult(
+                dto.userPossibleElectricityGeneration(),
+                dto.userAmountOfPossibleSavings(),
+                dto.userAmortisationTime(),
+                dto.userLifetimeYieldKwh(),
+                dto.userCo2SavingsKgPerYear(),
+                dto.userSelfConsumptionRate(),
+                dto.userAutarkyRate(),
+                dto.userDailyYield(),
+                dto.userDailySavings(),
+                dto.userHomeofficeCoverageRate(),
+                dto.userDailyEBikeRangeKm(),
+                dto.userDailyECarRangeKm()
+        );
+    }
+
     // Entities → DTO
     public UserResponseDTO toUserResponseDTO(User user) {
         return new UserResponseDTO(
@@ -59,10 +79,24 @@ public class UserMapper {
     }
 
     private UserResultDTO toUserResultDTO(UserResult result) {
+        // Werte runden, um Frontend-kompatible Zahlen zu liefern
         return new UserResultDTO(
                 result.userPossibleElectricityGeneration(),
-                result.userAmountofPossibleSavings(),
-                result.userAmortisationTime()
+                result.userAmountOfPossibleSavings(),
+                round(result.userAmortisationTime()),
+                round(result.userLifetimeYieldKwh()),
+                round(result.userCo2SavingsKgPerYear()),
+                round(result.userSelfConsumptionRate()),
+                round(result.userAutarkyRate()),
+                round(result.userDailyYield()),              // ✅ geändert
+                round(result.userDailySavings()),            // ✅ geändert
+                round(result.userHomeofficeCoverageRate()),  // ✅ geändert
+                round(result.userDailyEBikeRangeKm()),       // ✅ geändert
+                round(result.userDailyECarRangeKm())         // ✅ geändert
         );
+    }
+
+    private double round(double value) {
+        return Math.round(value * 10.0) / 10.0;
     }
 }

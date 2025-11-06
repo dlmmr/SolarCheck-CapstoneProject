@@ -16,7 +16,7 @@ export default function HomeAsset({ message, onCreateUser }: HomeAssetProps) {
                 </h1>
 
                 <p className={styles.HomeText}>
-                    Hier kannst du berechnen, ob sich ein Balkonkraftwerk für dich lohnt.
+                    Finde heraus, ob sich ein Balkonkraftwerk für deinen Haushalt rechnet.
                 </p>
 
                 <button
