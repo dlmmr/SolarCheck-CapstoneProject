@@ -3,7 +3,7 @@ import Header from "../page/Header.tsx";
 import Footer from "../page/Footer.tsx";
 
 interface LayoutProps {
-    children: React.ReactNode;
+    readonly children: React.ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {

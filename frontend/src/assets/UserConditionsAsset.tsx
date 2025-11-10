@@ -2,7 +2,7 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { Direction } from "../dto/Direction";
 import type { UserPvConfig } from "../dto/UserPvConfig";
 import "../app.css";
-import cheapIconR from "./icons/cheapIcon.png";
+import cheapIcon from "./icons/cheapIcon.png";
 import mediumIcon from "./icons/mediumIcon.png";
 import premiumIcon from "./icons/premiumIcon.png";
 
@@ -45,7 +45,7 @@ const PV_CARDS: Array<{
         key: "CHEAP_PV_COMBI",
         title: "kleines Balkonkraftwerk",
         desc: "800W • 4m² • 450€",
-        icon: cheapIconR,
+        icon: cheapIcon,
         details: "2 Module á 400W / Modul • 4m² ",
         specs: "800W Wechselrichter, Clipping Faktor: 1.0"
     },
@@ -68,7 +68,7 @@ const PV_CARDS: Array<{
 ];
 
 const TOOLTIPS = {
-    pvConfig: "Wähle die Größe des PV-Sets, das zu deinem Stromverbrauch passt. Die Sets unterscheiden sich nur in der Anzahl der Module und Gesamtkosten.",
+    pvConfig: "Wähle die Größe des PV-Sets, das zu deinem Stromverbrauch passt. Die Sets unterscheiden sich nur in der Anzahl der Module (und der damit verbundenen Fläche) und Gesamtkosten.",
     angle: "Gib den Neigungswinkel der Module ein. In Deutschland liegen die optimalen Winkel meist zwischen 30° und 35°. Flachdächer: 10–15°, Steildächer: 30–45°.",
     direction: "Wähle die Himmelsrichtung, in die die Module zeigen. Südausrichtung liefert die höchste Stromproduktion, Ost-West-Dächer verändern die Ertragsverteilung.",
     shade: "Trage den Verschattungsfaktor der Module ein: 0 = keine Verschattung, 1 = volle Verschattung über den Tagesverlauf."
@@ -110,10 +110,7 @@ export default function UserConditionsAsset({
                 <fieldset className="PvCardGrid">
                     <legend className="FormAndResultLabel">
                         Wähle ein Balkonkraftwerk
-                        <span
-                            className="TooltipIcon"
-                            title={TOOLTIPS.pvConfig}
-                        >
+                        <span className="TooltipIcon" title={TOOLTIPS.pvConfig}>
                             ℹ️
                         </span>
                     </legend>
@@ -137,15 +134,6 @@ export default function UserConditionsAsset({
                             </div>
                             <div className="PvCardTitle">{card.title}</div>
                             <div className="PvCardDesc">{card.desc}</div>
-                            {userPvConfig === card.key && (
-                                <div style={{
-                                    fontSize: '0.75rem',
-                                    color: 'var(--color-primary)',
-                                    marginTop: '8px',
-                                    fontStyle: 'italic'
-                                }}>
-                                </div>
-                            )}
                         </label>
                     ))}
                 </fieldset>
@@ -154,16 +142,7 @@ export default function UserConditionsAsset({
             <div className="FormAndResultContent">
                 <label htmlFor="montageAngle" className="FormAndResultLabel">
                     Neigungswinkel der Module
-                    <span
-                        className="TooltipIcon"
-                        title={TOOLTIPS.angle}
-                        style={{
-                            display: 'inline-block',
-                            marginLeft: '6px',
-                            cursor: 'help',
-                            fontSize: '1rem'
-                        }}
-                    >
+                    <span className="TooltipIcon" title={TOOLTIPS.angle}>
                         ℹ️
                     </span>
                 </label>
@@ -182,16 +161,7 @@ export default function UserConditionsAsset({
 
                 <label htmlFor="montageDirection" className="FormAndResultLabel">
                     Ausrichtung der Module
-                    <span
-                        className="TooltipIcon"
-                        title={TOOLTIPS.direction}
-                        style={{
-                            display: 'inline-block',
-                            marginLeft: '6px',
-                            cursor: 'help',
-                            fontSize: '1rem'
-                        }}
-                    >
+                    <span className="TooltipIcon" title={TOOLTIPS.direction}>
                         ℹ️
                     </span>
                 </label>
@@ -210,16 +180,7 @@ export default function UserConditionsAsset({
 
                 <label htmlFor="montageShadeFactor" className="FormAndResultLabel">
                     Verschattungsfaktor
-                    <span
-                        className="TooltipIcon"
-                        title={TOOLTIPS.shade}
-                        style={{
-                            display: 'inline-block',
-                            marginLeft: '6px',
-                            cursor: 'help',
-                            fontSize: '1rem'
-                        }}
-                    >
+                    <span className="TooltipIcon" title={TOOLTIPS.shade}>
                         ℹ️
                     </span>
                 </label>

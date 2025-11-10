@@ -206,6 +206,13 @@ p {
     font-size: var(--font-size-base);
 }
 
+.TooltipIcon {
+    display: inline-block;
+    margin-left: 6px;
+    cursor: help;
+    font-size: 1rem;
+}
+
 .FormAndResultInput,
 .FormAndResultSelect {
     width: 100%;
@@ -515,7 +522,6 @@ input[type="checkbox"]:focus {
 
 /* Result Page Wrapper */
 .ResultPageCompact {
-    /*min-height: 100vh;*/
     display: flex;
     flex-direction: column;
     padding: var(--spacing-lg);
@@ -764,7 +770,6 @@ input[type="checkbox"]:focus {
     }
 
     .ResultPageCompact {
-        /*min-height: 100vh;*/
         display: flex;
         flex-direction: column;
         padding: var(--spacing-lg);

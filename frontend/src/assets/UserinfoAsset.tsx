@@ -52,16 +52,7 @@ export default function UserinfoAsset({
             <div className="FormAndResultContent">
                 <label htmlFor="userRateOfElectricity" className="FormAndResultLabel">
                     Dein aktueller Strompreis in ct/kWh
-                    <span
-                        className="TooltipIcon"
-                        title={TOOLTIPS.electricity}
-                        style={{
-                            display: 'inline-block',
-                            marginLeft: '6px',
-                            cursor: 'help',
-                            fontSize: '1rem'
-                        }}
-                    >
+                    <span className="TooltipIcon" title={TOOLTIPS.electricity}>
                         ℹ️
                     </span>
                 </label>
@@ -80,16 +71,7 @@ export default function UserinfoAsset({
 
                 <label htmlFor="userHouseholdNumber" className="FormAndResultLabel">
                     Personenanzahl im Haushalt
-                    <span
-                        className="TooltipIcon"
-                        title={TOOLTIPS.household}
-                        style={{
-                            display: 'inline-block',
-                            marginLeft: '6px',
-                            cursor: 'help',
-                            fontSize: '1rem'
-                        }}
-                    >
+                    <span className="TooltipIcon" title={TOOLTIPS.household}>
                         ℹ️
                     </span>
                 </label>
@@ -108,16 +90,7 @@ export default function UserinfoAsset({
 
                 <label htmlFor="userElectricityConsumption" className="FormAndResultLabel">
                     Jährlicher Stromverbrauch in kWh
-                    <span
-                        className="TooltipIcon"
-                        title={TOOLTIPS.consumption}
-                        style={{
-                            display: 'inline-block',
-                            marginLeft: '6px',
-                            cursor: 'help',
-                            fontSize: '1rem'
-                        }}
-                    >
+                    <span className="TooltipIcon" title={TOOLTIPS.consumption}>
                         ℹ️
                     </span>
                 </label>
