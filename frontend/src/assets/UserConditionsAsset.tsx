@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import type { Direction } from "../dto/Direction";
 import type { UserPvConfig } from "../dto/UserPvConfig";
-import "../app.css";
+import "../App.css";
 import cheapIcon from "./icons/cheapIcon.png";
 import mediumIcon from "./icons/mediumIcon.png";
 import premiumIcon from "./icons/premiumIcon.png";

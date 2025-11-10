@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import "../app.css";
+import "../App.css";
 
 export interface UserInfoFormData {
     userRateOfElectricity: number | "";
