@@ -6,8 +6,6 @@
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg);
     max-width: var(--container-max-width);
-    width: 100%;
-    margin: var(--spacing-3xl) auto;
     display: flex;
     flex-direction: column;
     align-items: center;

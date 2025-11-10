@@ -12,7 +12,7 @@ export default function HomeAsset({ message, onCreateUser }: HomeAssetProps) {
         <main className={styles.HomeContainer} role="main">
             <div className={styles.HomeContent}>
                 <h1 className={styles.HomeTitle}>
-                    Willkommen zur SolarCheck-App
+                    Willkommen zum BalkonSolarCheck
                 </h1>
 
                 <p className={styles.HomeText}>
