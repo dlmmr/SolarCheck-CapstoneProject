@@ -1,5 +1,5 @@
 import type {UserResponseDTO} from "../dto/UserResponseDTO";
-import "../app.css";
+import "../App.css";
 
 interface Props {
     readonly user: UserResponseDTO | undefined;
