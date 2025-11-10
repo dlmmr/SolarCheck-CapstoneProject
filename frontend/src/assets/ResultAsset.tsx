@@ -86,7 +86,7 @@ export default function ResultAsset({user, goBack}: Props) {
                     value: userPossibleElectricityGeneration >= 1000
                         ? `${(userPossibleElectricityGeneration / 1000).toFixed(2)} MWh`
                         : `${userPossibleElectricityGeneration.toFixed(0)} kWh`,
-                    tooltip: "Erwartete jährliche Produktion",
+                    tooltip: "Die erwartete jährliche Stromproduktion aus Sonnenenergie.",
                     subtitle: `≈ ${(userPossibleElectricityGeneration / 365).toFixed(0)} kWh/Tag`
                 },
                 {
@@ -94,17 +94,14 @@ export default function ResultAsset({user, goBack}: Props) {
                     value: `${(userSelfConsumptionRate * 100).toFixed(0)} %`,
                     showProgress: true,
                     progressValue: userSelfConsumptionRate,
-                    tooltip: "Anteil selbst verbrauchter Solarstrom",
-                    subtitle: userSelfConsumptionRate >= 0.7
-                        ? "✓ Sehr effizienter Verbrauch"
-                        : "Optimierungspotential vorhanden"
+                    tooltip: "Der Anteil des Solarstroms, den du direkt selbst verbrauchst.",
                 },
                 {
                     label: "Autarkiegrad",
                     value: `${(userAutarkyRate * 100).toFixed(0)} %`,
                     showProgress: true,
                     progressValue: userAutarkyRate,
-                    tooltip: "Anteil Solar am Strombedarf",
+                    tooltip: "Der Anteil deines Strombedarfs, der durch Solarstrom gedeckt wird.",
                     subtitle: userAutarkyRate >= 0.7
                         ? "✓ Hohe Unabhängigkeit"
                         : "Teilweise vom Netz abhängig"
@@ -120,33 +117,27 @@ export default function ResultAsset({user, goBack}: Props) {
                     label: "CO₂-Einsparung/Jahr",
                     value: `${userCo2SavingsKgPerYear.toFixed(0)} kg`,
                     subtitle: `≈ ${(userCo2SavingsKgPerYear / 11).toFixed(0)} Bäume`,
-                    tooltip: "CO₂-Reduktion vs. Netzstrom"
+                    tooltip: "Die geschätzte CO₂-Einsparung durch Solarstrom statt Netzstrom."
                 },
                 {
                     label: "Homeoffice-Abdeckung",
-                    value: `${userHomeofficeCoverageRate.toFixed(0)} %`,  // ✅ Direkt anzeigen: 80 → 80%
+                    value: `${userHomeofficeCoverageRate.toFixed(0)} %`,
                     showProgress: true,
-                    progressValue: userHomeofficeCoverageRate / 100,  // ✅ Für Progress Bar: 80 → 0.8
-                    tooltip: "Anteil des Homeoffice-Bedarfs (≈3 kWh/Tag), der durch PV gedeckt werden kann",
+                    progressValue: userHomeofficeCoverageRate / 100,
+                    tooltip: "Der Anteil des Homeoffice-Strombedarfs, der durch PV gedeckt werden kann.",
                     subtitle: userHomeofficeCoverageRate >= 100
                         ? "✓ Vollständig gedeckt"
-                        : `${(3 * userHomeofficeCoverageRate / 100).toFixed(1)} von 3 kWh`  // ✅ Korrekt umrechnen
+                        : `${(3 * userHomeofficeCoverageRate / 100).toFixed(1)} von 3 kWh`
                 },
                 {
                     label: "E-Bike Reichweite/Tag",
                     value: `${userDailyEBikeRangeKm.toFixed(0)} km`,
-                    tooltip: "Tägliche E-Bike-Reichweite bei 15 Wh/km Verbrauch",
-                    subtitle: userDailyEBikeRangeKm >= 50
-                        ? "✓ Mehr als genug für Pendler"
-                        : `Für kurze Strecken geeignet`
+                    tooltip: "Die tägliche Reichweite mit dem E-Bike bei 15 Wh/km Verbrauch.",
                 },
                 {
                     label: "E-Auto Reichweite/Tag",
                     value: `${userDailyECarRangeKm.toFixed(0)} km`,
-                    tooltip: "Tägliche E-Auto-Reichweite bei 17 kWh/100km Verbrauch",
-                    subtitle: userDailyECarRangeKm >= 40
-                        ? "✓ Gut für tägliche Fahrten"
-                        : `Für Kurzstrecken nutzbar`
+                    tooltip: "Die tägliche Reichweite mit dem E-Auto bei 17 kWh/100km Verbrauch.",
                 }
             ]
         },
@@ -158,13 +149,13 @@ export default function ResultAsset({user, goBack}: Props) {
                 {
                     label: "Jährliche Kostenersparnis",
                     value: `${userAmountOfPossibleSavings.toFixed(0)} €`,
-                    tooltip: "Ihre geschätzte jährliche Ersparnis",
+                    tooltip: "Die geschätzte jährliche Kostenersparnis durch Solarstrom.",
                     subtitle: `≈ ${(userAmountOfPossibleSavings / 12).toFixed(0)} €/Monat`
                 },
                 {
                     label: "Amortisationsdauer",
                     value: `${userAmortisationTime.toFixed(0)} Jahre`,
-                    tooltip: "Zeit bis zur Amortisation",
+                    tooltip: "Die Zeit bis zur Refinanzierung deiner PV-Anlage.",
                     subtitle: userAmortisationTime <= 10
                         ? "✓ Schnelle Refinanzierung"
                         : "Langfristige Investition"
