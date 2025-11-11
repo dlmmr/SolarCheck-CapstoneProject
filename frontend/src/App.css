@@ -964,7 +964,7 @@ input[type="number"] {
     top: 0;
     z-index: 100;
     backdrop-filter: blur(10px);
-    height: 60px;
+    height: 45px;
 }
 
 .header-content {
@@ -1008,13 +1008,13 @@ input[type="number"] {
 }
 
 .nav-button {
-    padding: 9px 18px; /* -25% von 12px 24px */
+    padding: 6px 12px; /* -25% von 12px 24px */
     background-color: var(--bg-button-secondary);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
     font-weight: 600;
-    font-size: 12px; /* -25% von var(--font-size-base) */
+    font-size: 10px; /* -25% von var(--font-size-base) */
     cursor: pointer;
     transition: all var(--transition-base);
     text-decoration: none;
@@ -1060,30 +1060,33 @@ input[type="number"] {
 }
 
 /* ====================================
-   Footer Styling - Header-Größe
+   Footer Styling - Stabile Version
    ==================================== */
 .app-footer {
     flex-shrink: 0;
     background-color: var(--bg-card);
     border-top: 1px solid var(--border-color);
-    padding: 8px 0; /* Gleiche Höhe wie Header */
+    padding: 8px 0;
     width: 100%;
-    height: 60px;
+    min-height: 45px; /* min-height statt height! */
+    display: flex;
+    align-items: center;
 }
 
 .footer-content {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 9px 18px; /* Gleiche Padding wie Header */
+    padding: 9px 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 18px; /* Gleiche Gap wie Header */
+    gap: 18px;
+    width: 100%;
 }
 
 .footer-title {
-    font-size: 18px; /* Gleiche Größe wie Logo */
+    font-size: 18px;
     font-weight: 700;
     color: var(--text-primary);
     margin: 0;
@@ -1094,26 +1097,27 @@ input[type="number"] {
 }
 
 .footer-logo {
-    height: 28px;          /* Layout-Höhe bleibt klein */
+    height: 28px;
     width: auto;
+    max-width: 120px; /* Maximale Breite begrenzen */
     object-fit: contain;
-    transform: scale(1.0); /* visuell vergrößern */
-    margin: 0 12px;
-    transform-origin: center;
+    display: block; /* Wichtig: Verhindert Inline-Spacing */
+
 }
 
 .footer-links {
     display: flex;
-    gap: 12px; /* Gleiche Gap wie Header-Nav */
+    gap: 12px;
     align-items: center;
 }
 
 .footer-link {
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 12px; /* Gleiche Größe wie Nav-Button */
+    font-size: 12px;
     transition: color 0.2s ease;
-    padding: 9px 0; /* Gleiche vertikale Mitte wie Header */
+    padding: 6px 0;
+    white-space: nowrap; /* Links brechen nicht um */
 }
 
 .footer-link:hover {
@@ -1121,26 +1125,119 @@ input[type="number"] {
 }
 
 .footer-copyright {
-    font-size: 12px; /* Gleiche Größe wie Nav-Button */
+    font-size: 12px;
     color: var(--text-muted);
     margin: 0;
+    white-space: nowrap;
 }
 
 /* Mobile */
 @media (max-width: 768px) {
     .footer-content {
         flex-direction: column;
-        gap: 12px; /* Gleiche Gap wie Header */
-        padding: 9px; /* Gleiche Padding wie Header */
+        gap: 12px;
+        padding: 9px;
         text-align: center;
     }
 
     .footer-links {
-        gap: 9px; /* Gleiche Gap wie Header */
+        gap: 9px;
     }
 
     .footer-title {
-        font-size: 15px; /* Gleiche Größe wie Mobile-Logo */
+        font-size: 15px;
+    }
+
+    .footer-logo {
+        height: 24px; /* Kleiner auf Mobile */
     }
 }
+/* ====================================
+   InfoPage Specific Styles
+   ==================================== */
 
+/* Breiterer Container für InfoPage */
+.page--wide {
+    max-width: 900px;
+}
+
+.page--wide .FormAndResultContainer {
+    max-width: 900px;
+}
+
+/* Grid für Vorteile-Karten */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.info-card {
+    padding: var(--spacing-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-primary);
+}
+
+.info-card h3 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-primary);
+}
+
+.info-card p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Liste für Regelungen */
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.info-list > div {
+    padding: var(--spacing-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    line-height: 1.6;
+}
+
+.info-list strong {
+    color: var(--text-primary);
+}
+
+/* Highlight-Box */
+.info-highlight {
+    margin-top: var(--spacing-2xl);
+    padding: var(--spacing-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--color-primary);
+}
+
+.info-highlight strong {
+    display: block;
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
+}
+
+.info-highlight p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Mobile Anpassungen */
+@media (max-width: 768px) {
+    .page--wide {
+        max-width: 100%;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}

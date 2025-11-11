@@ -137,9 +137,9 @@ class UserServiceTest {
         double expectedCo2 = updated.userResult().userPossibleElectricityGeneration() * CO2_PER_KWH;
         assertEquals(expectedCo2, updated.userResult().userCo2SavingsKgPerYear(), 0.01);
 
-        // Eigenverbrauchsquote liegt in bekanntem Bereich
-        assertTrue(updated.userResult().userSelfConsumptionRate() >= 0.15);
-        assertTrue(updated.userResult().userSelfConsumptionRate() <= 0.35);
+        // Eigenverbrauchsquote liegt in bekanntem Bereich (neue Werte: 0.20-0.70)
+        assertTrue(updated.userResult().userSelfConsumptionRate() >= 0.20);
+        assertTrue(updated.userResult().userSelfConsumptionRate() <= 0.70);
 
         // Autarkiegrad ist zwischen 0 und 1
         assertTrue(updated.userResult().userAutarkyRate() >= 0.0);
@@ -165,8 +165,8 @@ class UserServiceTest {
         assertEquals(0.0, updated.userResult().userLifetimeYieldKwh());
         assertEquals(0.0, updated.userResult().userCo2SavingsKgPerYear());
 
-        // Bei ratio < 0.6 → selfConsumptionRate = 0.35
-        assertEquals(0.35, updated.userResult().userSelfConsumptionRate());
+        // Bei ratio = 0 → pvToConsumptionRatio <= 0.3 → selfConsumptionRate = 0.70
+        assertEquals(0.70, updated.userResult().userSelfConsumptionRate());
         assertEquals(0.0, updated.userResult().userAutarkyRate());
     }
 
@@ -391,15 +391,17 @@ class UserServiceTest {
         double ratio = generation / info.userElectricityConsumption();
         double selfConsumption = updated.userResult().userSelfConsumptionRate();
 
-        // Eigenverbrauchsquote basiert auf ratio
-        if (ratio < 0.6) {
+        // NEUE Eigenverbrauchsquote basiert auf ratio
+        if (ratio <= 0.3) {
+            assertEquals(0.70, selfConsumption, 0.001);
+        } else if (ratio <= 0.7) {
+            assertEquals(0.50, selfConsumption, 0.001);
+        } else if (ratio <= 1.0) {
             assertEquals(0.35, selfConsumption, 0.001);
-        } else if (ratio < 1.0) {
+        } else if (ratio <= 1.5) {
             assertEquals(0.25, selfConsumption, 0.001);
-        } else if (ratio < 1.5) {
-            assertEquals(0.20, selfConsumption, 0.001);
         } else {
-            assertEquals(0.15, selfConsumption, 0.001);
+            assertEquals(0.20, selfConsumption, 0.001);
         }
     }
 

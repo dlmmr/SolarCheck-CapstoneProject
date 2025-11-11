@@ -121,19 +121,21 @@ public class UserService {
         // 2) CO₂-Ersparnis pro Jahr
         double co2SavingsKgPerYear = possibleElectricity * CO2_PER_KWH;
 
-        // 3) Eigenverbrauchsquote (pauschal)
+        // 3) Eigenverbrauchsquote (vereinfacht, ohne Speicher)
         double annualConsumption = info.userElectricityConsumption();
-        double ratio = annualConsumption > 0 ? (possibleElectricity / annualConsumption) : 0.0;
+        double pvToConsumptionRatio = annualConsumption > 0 ? (possibleElectricity / annualConsumption) : 0.0;
         double selfConsumptionRate;
-        if (ratio < 0.6) selfConsumptionRate = 0.35;
-        else if (ratio < 1.0) selfConsumptionRate = 0.25;
-        else if (ratio < 1.5) selfConsumptionRate = 0.20;
-        else selfConsumptionRate = 0.15;
+        if (pvToConsumptionRatio <= 0.3) selfConsumptionRate = 0.70;
+        else if (pvToConsumptionRatio <= 0.7) selfConsumptionRate = 0.50;
+        else if (pvToConsumptionRatio <= 1.0) selfConsumptionRate = 0.35;
+        else if (pvToConsumptionRatio <= 1.5) selfConsumptionRate = 0.25;
+        else selfConsumptionRate = 0.20;
 
-        // 4) Autarkiegrad
+        // 4) Autarkiegrad = Eigenverbrauch / Gesamtverbrauch
+        double selfConsumedEnergy = selfConsumptionRate * possibleElectricity;
         double autarkyRate = (annualConsumption <= 0)
                 ? 0.0
-                : Math.min(1.0, (selfConsumptionRate * possibleElectricity) / annualConsumption);
+                : Math.min(1.0, selfConsumedEnergy / annualConsumption);
 
         // --- Tageswerte ---
         double dailyYield = roundToOneDecimal(yearlyYield / 365.0);
@@ -169,9 +171,8 @@ public class UserService {
     }
 
     // ----------------------------------------------------
-    // 🔹 Neue Hilfsmethoden
+    //  Hilfsmethoden
     // ----------------------------------------------------
-
 
     private double calculateHomeofficeCoverageRate(double dailyYieldKwh) {
         // Anteil des Homeoffice-Verbrauchs, der durch PV gedeckt wird
@@ -193,10 +194,6 @@ public class UserService {
     private double roundToOneDecimal(double value) {
         return Math.round(value * 10.0) / 10.0;
     }
-
-    // ----------------------------------------------------
-    // 🔹 Bestehende Helper
-    // ----------------------------------------------------
 
     private double getDirectionFactor(Direction direction) {
         return switch (direction) {

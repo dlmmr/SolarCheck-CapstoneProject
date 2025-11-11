@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import SolarBalkonCheckLogo from "../page/images/SolarBalkonCheckLogo.png";
+import BSCLogo from "./images/BSCLogo.png";
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -8,7 +8,7 @@ export default function Footer() {
         <footer className="app-footer">
             <div className="footer-content">
                 <img
-                    src={SolarBalkonCheckLogo}
+                    src={BSCLogo}
                     alt="BalkonSolarCheck Logo"
                     className="footer-logo"
                 />
