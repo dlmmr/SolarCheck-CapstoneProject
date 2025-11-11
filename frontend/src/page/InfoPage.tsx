@@ -8,10 +8,11 @@ export default function InfoPage() {
                     <section>
                         <h2>Was ist ein Balkonkraftwerk?</h2>
                         <p>
-                            Ein Balkonkraftwerk ist eine <strong>steckerfertige Mini-Solaranlage</strong>, die
+                            Ein Balkonkraftwerk ist eine <strong>steckerfertige Mini-Solaranlage</strong>{' '}die
                             Sie einfach an Ihre Steckdose anschließen können. Die Anlage besteht aus
-                            <strong> Solarpaneelen</strong> (meist 2-4 Module) und einem <strong>Wechselrichter</strong>,
-                            der den erzeugten Gleichstrom in nutzbaren Wechselstrom für Ihr Zuhause umwandelt.
+                            <strong> Solarpaneelen</strong>{' '} (meist 2-4 Module) und einem{' '}
+                            <strong>Wechselrichter</strong>, der den erzeugten Gleichstrom in nutzbaren
+                            Wechselstrom für Ihr Zuhause umwandelt.
                         </p>
                         <p>
                             Der erzeugte Strom fließt direkt in Ihren Haushalt und reduziert Ihren Strombezug

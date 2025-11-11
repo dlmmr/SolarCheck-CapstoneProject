@@ -5,7 +5,7 @@ import UserConditionsPage from "./page/UserConditionsPage";
 import ResultPage from "./page/ResultPage";
 import "./App.css";
 import Layout from "./assets/Layout.tsx";
-import InfoPage from "./page/InfoPage.tsx";
+import InfoPage from "./page/InfoPage";
 
 function App() {
     return (

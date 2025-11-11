@@ -171,7 +171,7 @@ public class UserService {
     }
 
     // ----------------------------------------------------
-    // 🔹 Hilfsmethoden
+    //  Hilfsmethoden
     // ----------------------------------------------------
 
     private double calculateHomeofficeCoverageRate(double dailyYieldKwh) {
