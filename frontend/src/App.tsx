@@ -5,6 +5,7 @@ import UserConditionsPage from "./page/UserConditionsPage";
 import ResultPage from "./page/ResultPage";
 import "./App.css";
 import Layout from "./assets/Layout.tsx";
+import InfoPage from "./page/InfoPage.tsx";
 
 function App() {
     return (
@@ -15,7 +16,7 @@ function App() {
                 <Route path="/userinfo" element={<UserFormPage />} />
                 <Route path="/userConditions" element={<UserConditionsPage />} />
                 <Route path="/result" element={<ResultPage />} />
-                {/*<Route path="/info" element={<InfoPage />} />*/}
+                <Route path="/info" element={<InfoPage />} />
                 {/* Footer Links - kannst du später implementieren */}
                 <Route path="/impressum" element={<div>Impressum</div>} />
                 <Route path="/datenschutz" element={<div>Datenschutz</div>} />

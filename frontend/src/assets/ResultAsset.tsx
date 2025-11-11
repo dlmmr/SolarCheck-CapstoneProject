@@ -94,11 +94,13 @@ export default function ResultAsset({user, goBack}: Props) {
                     value: `${(userSelfConsumptionRate * 100).toFixed(0)} %`,
                     showProgress: true,
                     progressValue: userSelfConsumptionRate,
-                    tooltip: "Der Anteil des Solarstroms, den du direkt selbst verbrauchst.",
+                    tooltip: "Gibt an, wie viel deines erzeugten Solarstroms du selbst nutzt. " +
+                        "Der Wert hängt stark von deinem Alltag ab – z. B. ob du tagsüber zu Hause bist oder viel Strom nachts verbrauchst. " +
+                        "Typisch sind etwa 60–70 % bei kleineren und 20–35 % bei größeren Anlagen (ohne Speicher).",
                 },
                 {
                     label: "Autarkiegrad",
-                    value: `${(userAutarkyRate * 100).toFixed(0)} %`,
+                    value: `≈ ${(userAutarkyRate * 100).toFixed(0)} %`,
                     showProgress: true,
                     progressValue: userAutarkyRate,
                     tooltip: "Der Anteil deines Strombedarfs, der durch Solarstrom gedeckt wird.",
