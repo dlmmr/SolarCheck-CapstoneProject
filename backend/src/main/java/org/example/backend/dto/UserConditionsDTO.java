@@ -6,18 +6,18 @@ import org.example.backend.model.UserPvConfig;
 
 public record UserConditionsDTO(
         @NotNull
-        UserPvConfig userPvConfig,           // ersetzt montagePlace
+        UserPvConfig userPvConfig,
 
         @NotNull
         @Min(0)
         @Max(90)
-        int montageAngle,                 //  Wertebereich 0-90
+        int montageAngle,
 
         @NotNull
-        Direction montageDirection,           //
+        Direction montageDirection,
 
         @NotNull
         @DecimalMin("0.0")
         @DecimalMax("1.0")
-        double montageShadeFactor             // Wertebereich 0.0-1.0
+        double montageShadeFactor
 ) {}

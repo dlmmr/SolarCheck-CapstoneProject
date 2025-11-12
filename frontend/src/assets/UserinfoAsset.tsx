@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import {useState, type ChangeEvent, type FormEvent} from "react";
 import "../App.css";
 
 export interface UserInfoFormData {
@@ -29,7 +29,7 @@ export default function UserinfoAsset({
                                           isLoading = false,
                                       }: UserinfoAssetProps) {
     const [submitted, setSubmitted] = useState(false);
-    const { userRateOfElectricity = "", userHouseholdNumber = "", userElectricityConsumption = "" } = formData;
+    const {userRateOfElectricity = "", userHouseholdNumber = "", userElectricityConsumption = ""} = formData;
 
     const isRateValid = userRateOfElectricity !== "" && userRateOfElectricity >= 1 && userRateOfElectricity <= 500;
     const isHouseholdValid = userHouseholdNumber !== "" && userHouseholdNumber >= 1 && userHouseholdNumber <= 20;

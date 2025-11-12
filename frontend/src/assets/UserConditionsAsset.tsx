@@ -1,6 +1,6 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import type { Direction } from "../dto/Direction";
-import type { UserPvConfig } from "../dto/UserPvConfig";
+import {useState, type ChangeEvent, type FormEvent} from "react";
+import type {Direction} from "../dto/Direction";
+import type {UserPvConfig} from "../dto/UserPvConfig";
 import "../App.css";
 import cheapIcon from "./icons/cheapIcon.png";
 import mediumIcon from "./icons/mediumIcon.png";
@@ -84,7 +84,7 @@ export default function UserConditionsAsset({
                                                 isLoading = false,
                                             }: UserConditionsAssetProps) {
     const [submitted, setSubmitted] = useState(false);
-    const { userPvConfig, montageAngle, montageDirection, montageShadeFactor } = formData;
+    const {userPvConfig, montageAngle, montageDirection, montageShadeFactor} = formData;
 
     const valid = {
         config: userPvConfig !== "",
@@ -130,7 +130,7 @@ export default function UserConditionsAsset({
                                 aria-label={`${card.title}: ${card.desc}`}
                             />
                             <div className="PvCardIcon">
-                                <img src={card.icon} alt={card.title} />
+                                <img src={card.icon} alt={card.title}/>
                             </div>
                             <div className="PvCardTitle">{card.title}</div>
                             <div className="PvCardDesc">{card.desc}</div>

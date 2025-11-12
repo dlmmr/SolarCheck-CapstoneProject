@@ -5,7 +5,7 @@ interface HomeAssetProps {
     readonly onCreateUser: () => void;
 }
 
-export default function HomeAsset({ message, onCreateUser }: HomeAssetProps) {
+export default function HomeAsset({message, onCreateUser}: HomeAssetProps) {
     const isSuccess = message.startsWith("✅");
 
     return (

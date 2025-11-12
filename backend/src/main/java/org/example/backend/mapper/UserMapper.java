@@ -79,7 +79,6 @@ public class UserMapper {
     }
 
     private UserResultDTO toUserResultDTO(UserResult result) {
-        // Werte runden, um Frontend-kompatible Zahlen zu liefern
         return new UserResultDTO(
                 result.userPossibleElectricityGeneration(),
                 result.userAmountOfPossibleSavings(),
@@ -88,11 +87,11 @@ public class UserMapper {
                 round(result.userCo2SavingsKgPerYear()),
                 round(result.userSelfConsumptionRate()),
                 round(result.userAutarkyRate()),
-                round(result.userDailyYield()),              // ✅ geändert
-                round(result.userDailySavings()),            // ✅ geändert
-                round(result.userHomeofficeCoverageRate()),  // ✅ geändert
-                round(result.userDailyEBikeRangeKm()),       // ✅ geändert
-                round(result.userDailyECarRangeKm())         // ✅ geändert
+                round(result.userDailyYield()),
+                round(result.userDailySavings()),
+                round(result.userHomeofficeCoverageRate()),
+                round(result.userDailyEBikeRangeKm()),
+                round(result.userDailyECarRangeKm())
         );
     }
 

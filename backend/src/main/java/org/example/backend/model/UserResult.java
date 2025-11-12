@@ -8,9 +8,9 @@ public record UserResult(
         double userCo2SavingsKgPerYear,
         double userSelfConsumptionRate,
         double userAutarkyRate,
-        double userDailyYield,              // ✅ geändert von dailyYield
-        double userDailySavings,            // ✅ geändert von dailySavings
-        double userHomeofficeCoverageRate,  // ✅ geändert von homeofficeCoverageRate
-        double userDailyEBikeRangeKm,       // ✅ geändert von dailyEBikeRangeKm
-        double userDailyECarRangeKm         // ✅ geändert von dailyECarRangeKm
+        double userDailyYield,
+        double userDailySavings,
+        double userHomeofficeCoverageRate,
+        double userDailyEBikeRangeKm,
+        double userDailyECarRangeKm
 ) {}

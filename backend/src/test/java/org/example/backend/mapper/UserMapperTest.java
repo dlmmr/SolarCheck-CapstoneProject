@@ -37,11 +37,10 @@ class UserMapperTest {
 
     @Test
     void toUserConditions_ShouldMapCorrectly() {
-        // FIX: Changed to use actual enum values from the model classes
         UserConditionsDTO dto = new UserConditionsDTO(
-                UserPvConfig.CHEAP_PV_COMBI,  // Changed from "Dach" - using actual enum value
-                35,                            // Changed from 35.0 (int instead of double)
-                Direction.SOUTH,               // Changed from "Süd" - using actual enum value
+                UserPvConfig.CHEAP_PV_COMBI,
+                35,
+                Direction.SOUTH,
                 0.1
         );
         UserConditions entity = mapper.toUserConditions(dto);
@@ -85,16 +84,16 @@ class UserMapperTest {
         // FIX: Changed to match actual entity types
         UserInfo info = new UserInfo(30, 2, 3000);  // Changed from 30.5 to 30
         UserConditions cond = new UserConditions(
-                UserPvConfig.CHEAP_PV_COMBI,  // Changed from "Dach"
-                35,                            // Changed from 35.0
-                Direction.SOUTH,               // Changed from "Süd"
+                UserPvConfig.CHEAP_PV_COMBI,
+                35,
+                Direction.SOUTH,
                 0.1
         );
         UserResult result = new UserResult(1000, 500, 12.345, 10000.555, 300.666,
                 0.85, 0.9, 5.555, 2.444, 0.777, 25.666, 120.888);
 
-        // FIX: User constructor expects String userId, not Long
-        User user = new User("1", info, cond, result);  // Changed from 1L to "1"
+
+        User user = new User("1", info, cond, result);
 
         UserResponseDTO dto = mapper.toUserResponseDTO(user);
 
@@ -102,7 +101,7 @@ class UserMapperTest {
         assertNotNull(dto.userConditions());
         assertNotNull(dto.userResult());
 
-        // Rundung überprüfen (eine Nachkommastelle)
+
         assertEquals(12.3, dto.userResult().userAmortisationTime());
         assertEquals(10000.6, dto.userResult().userLifetimeYieldKwh());
         assertEquals(0.8, dto.userResult().userHomeofficeCoverageRate());
@@ -110,7 +109,7 @@ class UserMapperTest {
 
     @Test
     void toUserResponseDTO_ShouldHandleNullSubObjects() {
-        // FIX: User constructor expects String userId, not Long
+
         User user = new User("2", null, null, null);  // Changed from 2L to "2"
 
         UserResponseDTO dto = mapper.toUserResponseDTO(user);
@@ -118,7 +117,6 @@ class UserMapperTest {
         assertNull(dto.userInfo());
         assertNull(dto.userConditions());
         assertNull(dto.userResult());
-        // FIX: Already correct - comparing String to String
         assertEquals("2", dto.userId());
     }
 

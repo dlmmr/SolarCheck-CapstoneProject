@@ -5,6 +5,6 @@ import type { UserResult } from "./UserResult";
 export interface User {
     userId: string;
     userInfo: UserInfo;
-    userConditions: UserConditionsDTO; // <-- hier den DTO-Typ verwenden
+    userConditions: UserConditionsDTO;
     userResult: UserResult;
 }

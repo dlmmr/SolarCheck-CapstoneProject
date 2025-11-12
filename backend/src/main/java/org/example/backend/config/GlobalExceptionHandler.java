@@ -17,14 +17,10 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    /** Gemeinsamer Schlüsselname für Fehlermeldungen */
+
     private static final String ERROR_KEY = "error";
 
-    /**
-     * Behandelt Validierungsfehler von @Valid Annotationen.
-     * Loggt als DEBUG, da diese Fehler durch Benutzereingaben verursacht werden
-     * und keine technischen Fehler darstellen.
-     */
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         if (logger.isDebugEnabled()) {
@@ -48,10 +44,7 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    /**
-     * Behandelt Business-Logik Fehler (z.B. fehlende UserInfo oder UserConditions).
-     * Loggt als WARN, da es sich um erwartbare Zustände handelt.
-     */
+
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> handleIllegalState(IllegalStateException ex) {
         logger.warn("Business logic error: {}", ex.getMessage());
@@ -64,10 +57,7 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    /**
-     * Behandelt ungültige Argumente (z.B. User nicht gefunden).
-     * Loggt als WARN, da es sich um erwartbare Fehler handelt.
-     */
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, String>> handleIllegalArgument(IllegalArgumentException ex) {
         logger.warn("Invalid argument: {}", ex.getMessage());
@@ -80,10 +70,7 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    /**
-     * Fallback für alle unerwarteten Exceptions.
-     * Loggt als ERROR, da es sich um technische Fehler handelt.
-     */
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
         logger.error("Unexpected error occurred", ex);
