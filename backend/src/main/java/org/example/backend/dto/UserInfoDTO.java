@@ -2,7 +2,6 @@ package org.example.backend.dto;
 
 import jakarta.validation.constraints.*;
 
-// Alle Felder Pflichtfelder mit validierungsrelevanten Constraints
 public record UserInfoDTO(
         @NotNull
         @Positive

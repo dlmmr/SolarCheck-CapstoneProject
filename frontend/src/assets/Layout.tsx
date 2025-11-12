@@ -6,14 +6,14 @@ interface LayoutProps {
     readonly children: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({children}: LayoutProps) {
     return (
         <div className="layout-wrapper">
-            <Header />
+            <Header/>
             <main className="layout-main">
                 {children}
             </main>
-            <Footer />
+            <Footer/>
         </div>
     );
 }
