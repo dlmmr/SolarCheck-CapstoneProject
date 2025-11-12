@@ -1,3 +1,5 @@
+import BalkonkraftwerkBeispielBild from "./images/BalkonkraftwerkBeispiel.png";
+
 export default function InfoPage() {
     return (
         <div className="page page--wide">
@@ -17,8 +19,17 @@ export default function InfoPage() {
                         <p>
                             Der erzeugte Strom fließt direkt in Ihren Haushalt und reduziert Ihren Strombezug
                             vom Netz – Sie verbrauchen also weniger kostenpflichtigen Netzstrom. Erste
-                            Komplettsysteme sind bereits <strong>ab etwa 250 Euro</strong> bei großen Discountern erhältlich.
+                            Komplettsysteme sind bereits <strong>ab etwa 300 Euro</strong> bei großen Discountern erhältlich.
                         </p>
+                    </section>
+
+                    <section>
+                        <div className={"info-images"}>
+                        <img
+                            src={BalkonkraftwerkBeispielBild}
+                            alt="Beispielbild eines Balkonkraftwerks mit Wechselrichter"
+                        />
+                        </div>
                     </section>
 
                     <section>
@@ -77,6 +88,14 @@ export default function InfoPage() {
                                 mehr grundlos ablehnen. Bei Balkonmontage haben Sie ein weitgehendes Recht
                                 auf Installation.
                             </div>
+
+                            <div>
+                                <strong>Fördermöglichkeiten:</strong> Viele Städte, Gemeinden und Bundesländer
+                                unterstützen den Kauf von Balkonkraftwerken mit Zuschüssen oder Förderprogrammen.
+                                Die Höhe und Bedingungen variieren je nach Wohnort, daher lohnt sich ein kurzer
+                                Blick auf die lokalen Förderportale.
+                            </div>
+
                         </div>
                     </section>
 
@@ -102,7 +121,7 @@ export default function InfoPage() {
                             Balkonkraftwerke sind eine einfache, kostengünstige Möglichkeit, Ihre
                             Stromkosten zu senken und aktiv zum Klimaschutz beizutragen – ohne großen
                             Installationsaufwand oder bauliche Veränderungen. Die Investition rechnet
-                            sich meist innerhalb von 5-12 Jahren, und danach produzieren Sie jahrelang
+                            sich meist innerhalb von 2-5 Jahren, und danach produzieren Sie jahrelang
                             kostenlos Ihren eigenen Strom.
                         </p>
                     </div>
