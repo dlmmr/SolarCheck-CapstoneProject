@@ -108,6 +108,13 @@ export default function InfoPage() {
                             wir Ihre voraussichtliche Stromerzeugung, Kostenersparnis, CO₂-Reduktion und
                             Amortisationszeit.
                         </p>
+
+                        <p> Die Berechnungen nutzen einen durchschnittlichen Sonnenwert von 1000 W/m²,
+                        der sich in Deutschland bewährt hat. Die tatsächliche Sonneneinstrahlung variiert
+                        natürlich zwischen Nord- und Süddeutschland sowie je nach Jahreszeit und
+                        Wetterlage.
+                        </p>
+
                         <p>
                             Zusätzlich zeigen wir Ihnen praktische Alltagswerte wie die mögliche E-Bike-
                             oder E-Auto-Reichweite sowie die Homeoffice-Abdeckung, die Sie mit Ihrem
