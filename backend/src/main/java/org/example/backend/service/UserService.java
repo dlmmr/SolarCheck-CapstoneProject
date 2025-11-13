@@ -13,7 +13,7 @@ public class UserService {
     private final UserRepository userRepository;
 
     // Constants
-    private static final int SOLAR_IRRADIANCE = 1000;
+    private static final int SOLAR_IRRADIANCE = 1000; //Sonnenstrahlung Konstante
     private static final int LIFETIME_YEARS = 25;
     private static final double DEGRADATION_RATE = 0.005; // 0.5%/Jahr
     private static final double CO2_PER_KWH = 0.4; // kg CO₂ pro kWh
